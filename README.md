@@ -76,7 +76,7 @@ Built with NestJS following:
 
 ## 📁 Project Structure
 
-\`\`\`
+```
 src/
 ├── chat/
 │ ├── dto/
@@ -93,7 +93,7 @@ src/
 ├── config/
 ├── health/
 main.ts
-\`\`\`
+```
 
 ---
 
@@ -101,31 +101,31 @@ main.ts
 
 ### 1. Clone the Repo
 
-\`\`\`bash
+```bash
 git clone https://github.com/venkhatbalaji/rag-chat-system
 cd rag-chat-storage
-\`\`\`
+```
 
 ### 2. Environment Setup
 
-\`\`\`bash
+```bash
 cp .env.example .env
-\`\`\`
+```
 
 Update values in \`.env\`
 
 ### 3. Run with Docker
 
-\`\`\`bash
+```bash
 docker-compose up --build
-\`\`\`
+```
 
 ### 4. Run Locally (Without Docker)
 
-\`\`\`bash
+```bash
 npm install
 npm run start:dev
-\`\`\`
+```
 
 ---
 
@@ -165,7 +165,7 @@ http://localhost:3000/api-docs
 
 Example config in `main.ts`:
 
-\`\`\`ts
+```ts
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 const config = new DocumentBuilder()
@@ -177,7 +177,7 @@ const config = new DocumentBuilder()
 
 const document = SwaggerModule.createDocument(app, config);
 SwaggerModule.setup('api-docs', app, document);
-\`\`\`
+```
 
 ---
 
