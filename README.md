@@ -142,8 +142,7 @@ npm run start:dev
 | POST   | `/api/v1/sessions/:sessionId/message` | Add a message to a session                |
 | GET    | `/docs`                               | Swagger UI (auto-generated docs)          |
 
-All APIs require the `x-api-key` header.
----
+## All APIs require the `x-api-key` header.
 
 ## 📑 Swagger/OpenAPI Integration
 
@@ -158,15 +157,14 @@ Example config in `main.ts`:
 ```ts
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
-const config = new DocumentBuilder()
-  .setTitle('RAG Chat Storage API')
-  .setDescription('APIs for managing RAG chat sessions and messages')
+const swaggerConfig = new DocumentBuilder()
+  .setTitle(`${appName}.api`)
+  .setDescription(`${appName}.api Documentation`)
   .setVersion('1.0')
   .addApiKey({ type: 'apiKey', name: 'x-api-key', in: 'header' }, 'API_KEY')
   .build();
-
-const document = SwaggerModule.createDocument(app, config);
-SwaggerModule.setup('api-docs', app, document);
+const document = SwaggerModule.createDocument(app, swaggerConfig);
+SwaggerModule.setup('docs', app, document);
 ```
 
 ---
