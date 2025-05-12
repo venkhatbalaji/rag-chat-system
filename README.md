@@ -169,6 +169,12 @@ SwaggerModule.setup('docs', app, document);
 
 ---
 
+## Test Coverage
+
+![TEST-Coverage](./Test-2025-05-12.png)
+
+---
+
 ## Bonus Features (Implemented)
 
 - ✅ Dockerized MongoDB

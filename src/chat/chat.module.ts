@@ -4,7 +4,7 @@ import { ChatController } from './chat.controller';
 import { Message, MessageSchema } from '../chat/schemas/message.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Session, SessionSchema } from 'src/session/schemas/session.schema';
+import { Session, SessionSchema } from '../session/schemas/session.schema';
 import { GeneratorService } from '../mock/service/generator.service';
 import { RetrieverService } from '../mock/service/retriever.service';
 import { Document } from '../mock/entities/document.entity';

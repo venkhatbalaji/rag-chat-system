@@ -10,7 +10,8 @@ export class SlackService {
     private readonly configService: ConfigService,
     private readonly http: HttpServiceWrapper,
   ) {
-    this.webhookUrl = this.configService.get<string>('SLACK_WEBHOOK_URL');
+    this.webhookUrl = this.configService.get<string>('slack.url');
+    this.isEnabled = this.configService.get<boolean>('slack.isEnabled');
   }
 
   async sendAlert(message: string) {

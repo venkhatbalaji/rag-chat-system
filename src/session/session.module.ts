@@ -8,7 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { GeneratorService } from '../mock/service/generator.service';
 import { RetrieverService } from '../mock/service/retriever.service';
 import { Document } from '../mock/entities/document.entity';
-import { ChatService } from 'src/chat/chat.service';
+import { ChatService } from '../chat/chat.service';
 
 @Module({
   imports: [
