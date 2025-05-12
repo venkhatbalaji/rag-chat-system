@@ -1,4 +1,13 @@
-import { Controller, Post, Get, Param, Body, Query, Res } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Param,
+  Body,
+  Query,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { Response as ExpressResponse } from 'express';
 import { ChatService } from './chat.service';
 import {
@@ -8,6 +17,7 @@ import {
   ApiBody,
   ApiQuery,
   ApiResponse,
+  ApiSecurity,
 } from '@nestjs/swagger';
 import { AddMessageDto } from './dto/add-message.dto';
 import { QueryMessagesDto } from './dto/query-messages.dto';
@@ -17,8 +27,11 @@ import {
   ApiResponse as Response,
   createSuccessResponse,
 } from '../common/utils/response.util';
+import { StreamedMessageResponseDto } from './dto/streamed-message.dto';
+import { RateLimitGuard } from '../common/guards/rate-limit.guard';
 
 @ApiTags('Chat')
+@ApiSecurity('API_KEY')
 @Controller('sessions/:sessionId/message')
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
@@ -31,6 +44,7 @@ export class ChatController {
   @ApiQuery({ name: 'limit', required: false })
   @ApiQuery({ name: 'offset', required: false })
   @ApiQuery({ name: 'search', required: false })
+  @UseGuards(RateLimitGuard)
   @ApiResponse({ status: 200, type: [MessageResponseDto] })
   async getMessages(
     @Param('sessionId') sessionId: string,
@@ -47,7 +61,8 @@ export class ChatController {
   @ApiOperation({ summary: 'Add a message to a session with optional context' })
   @ApiParam({ name: 'sessionId' })
   @ApiBody({ type: AddMessageDto })
-  @ApiResponse({ status: 201, type: MessageResponseDto })
+  @UseGuards(RateLimitGuard)
+  @ApiResponse({ status: 201, type: StreamedMessageResponseDto })
   async addMessage(
     @Param('sessionId') sessionId: string,
     @Body() body: AddMessageDto,

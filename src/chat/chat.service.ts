@@ -61,6 +61,12 @@ export class ChatService {
     response.setHeader('Cache-Control', 'no-cache');
     response.setHeader('Connection', 'keep-alive');
 
+    const sourcesText = sources
+      .map((s) => s.snippet)
+      .join('\n\n')
+      .replace(/[\r\n]+/g, ' ')
+      .replace(/"/g, '\\"');
+
     //Send prompt, context, and history to generator
     await this.generatorService.streamReply(
       {
@@ -72,7 +78,10 @@ export class ChatService {
         // 📤 Stream each token/chunk back to client
         finalAnswer += chunk;
         response.write(
-          `data: ${JSON.stringify({ delta: { content: chunk, sources: sources.map((s) => s.snippet).join('\n\n') } })}\n\n`,
+          `data: ${JSON.stringify({
+            delta: { content: chunk, sources: sourcesText },
+            sessionId: sessionId,
+          })}\n\n`,
         );
       },
     );

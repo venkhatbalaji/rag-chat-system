@@ -9,13 +9,18 @@ import { GeneratorService } from '../../src/mock/service/generator.service';
 import { ChatService } from '../../src/chat/chat.service';
 import { Document } from '../../src/mock/entities/document.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { CloudflareService } from '../../src/common/cloudflare/cloudflare.service';
+import { ConfigService } from '@nestjs/config';
+import { HttpServiceWrapper } from '../../src/common/http/http.service';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { RateLimitGuard } from '../../src/common/guards/rate-limit.guard';
+import { RedisService } from '../../src/common/redis/redis.service';
 
 describe('SessionModule', () => {
   let module: TestingModule;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [],
       controllers: [SessionController],
       providers: [
         SessionService,
@@ -42,13 +47,64 @@ describe('SessionModule', () => {
         },
         {
           provide: getRepositoryToken(Document),
-          useValue: {}, // mock TypeORM repository
+          useValue: {},
+        },
+        {
+          provide: CloudflareService,
+          useValue: {
+            blockIp: jest.fn().mockResolvedValue(true),
+          },
+        },
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn((key: string) => {
+              const defaults = {
+                'ratelimit.isEnabled': true,
+                'rateLimit.maxRequestsPerSec': 2,
+                'rateLimit.tempBlockDuration': 30,
+                'rateLimit.abuseThreshold': 10,
+                'rateLimit.maxSec': 10,
+              };
+              return defaults[key];
+            }),
+          },
+        },
+        {
+          provide: HttpServiceWrapper,
+          useValue: {
+            get: jest.fn(),
+            post: jest.fn(),
+          },
+        },
+        {
+          provide: WINSTON_MODULE_NEST_PROVIDER,
+          useValue: {
+            log: jest.fn(),
+            warn: jest.fn(),
+            error: jest.fn(),
+          },
+        },
+        {
+          provide: RateLimitGuard,
+          useValue: {
+            canActivate: jest.fn().mockResolvedValue(true),
+          },
+        },
+        {
+          provide: RedisService,
+          useValue: {
+            get: jest.fn(),
+            set: jest.fn(),
+            incr: jest.fn(),
+            expire: jest.fn(),
+          },
         },
       ],
     }).compile();
   });
 
-  it('should compile the module and expose SessionService', () => {
+  it('should compile the module and expose SessionService and SessionController', () => {
     const service = module.get<SessionService>(SessionService);
     const controller = module.get<SessionController>(SessionController);
 

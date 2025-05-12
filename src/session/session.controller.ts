@@ -8,6 +8,7 @@ import {
   Get,
   Query,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { Response as ExpressResponse } from 'express';
 import { SessionService } from './session.service';
@@ -20,6 +21,7 @@ import {
   ApiResponse,
   ApiBody,
   ApiQuery,
+  ApiSecurity,
 } from '@nestjs/swagger';
 import { SessionResponseDto } from './dto/session-response.dto';
 import { QuerySessionsDto } from './dto/query-sessions.dto';
@@ -29,9 +31,12 @@ import {
   createSuccessResponse,
 } from '../common/utils/response.util';
 import { DeleteResult } from 'mongoose';
+import { StreamedMessageResponseDto } from '../chat/dto/streamed-message.dto';
+import { RateLimitGuard } from '../common/guards/rate-limit.guard';
 
 @ApiTags('Session')
 @Controller('sessions')
+@ApiSecurity('API_KEY')
 export class SessionController {
   constructor(private readonly sessionService: SessionService) {}
 
@@ -40,6 +45,7 @@ export class SessionController {
   @ApiQuery({ name: 'limit', required: false })
   @ApiQuery({ name: 'offset', required: false })
   @ApiQuery({ name: 'userId', required: false })
+  @UseGuards(RateLimitGuard)
   @ApiResponse({ status: 200, type: [SessionResponseDto] })
   async getSessions(@Query() query: QuerySessionsDto) {
     const sessions = await this.sessionService.getSessions(query);
@@ -49,7 +55,8 @@ export class SessionController {
   @Post()
   @ApiOperation({ summary: 'Create a new session' })
   @ApiBody({ type: CreateSessionDto })
-  @ApiResponse({ status: 201, type: SessionResponseDto })
+  @UseGuards(RateLimitGuard)
+  @ApiResponse({ status: 201, type: StreamedMessageResponseDto })
   async create(@Body() body: CreateSessionDto, @Res() res: ExpressResponse) {
     await this.sessionService.createSession(body.userId, body.title, res);
   }
@@ -57,6 +64,7 @@ export class SessionController {
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a session and its messages' })
   @ApiParam({ name: 'id' })
+  @UseGuards(RateLimitGuard)
   @ApiResponse({ status: 200 })
   async delete(
     @Param('id') sessionId: string,
@@ -69,6 +77,7 @@ export class SessionController {
   @ApiOperation({ summary: 'Update session title or favorite status' })
   @ApiParam({ name: 'id' })
   @ApiBody({ type: UpdateSessionDto })
+  @UseGuards(RateLimitGuard)
   @ApiResponse({ status: 200, type: SessionResponseDto })
   async update(
     @Param('id') id: string,

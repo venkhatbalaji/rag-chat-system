@@ -19,8 +19,19 @@ export default () => ({
   },
   ratelimit: {
     isEnabled: process.env.RATELIMIT_ENABLED === 'true',
-    windowSeconds: parseInt(process.env.RATE_LIMIT_WINDOW_SEC || '600', 10),
-    maxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '5', 10),
+    maxRequestsPerSec: parseInt(
+      process.env.RATE_LIMIT_MAX_REQUESTS || '600',
+      10,
+    ),
+    maxSec: parseInt(process.env.RATE_LIMIT_SEC || '1', 10),
+    tempBlockDuration: parseInt(
+      process.env.RATE_LIMIT_TEMP_BLOCK_DURATION || '5',
+      10,
+    ),
+    abuseThreshold: parseInt(
+      process.env.RATE_LIMIT_ABUSE_THRESHOLD || '10',
+      10,
+    ),
   },
   redis: {
     host: process.env.REDIS_HOST,

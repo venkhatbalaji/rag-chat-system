@@ -6,6 +6,12 @@ import { UpdateSessionDto } from '../../src/session/dto/update-session.dto';
 import { QuerySessionsDto } from '../../src/session/dto/query-sessions.dto';
 import { Response as ExpressResponse } from 'express';
 import { DeleteResult } from 'mongodb';
+import { RateLimitGuard } from '../../src/common/guards/rate-limit.guard';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { ConfigService } from '@nestjs/config';
+import { HttpModule } from '@nestjs/axios';
+import { RedisService } from '../../src/common/redis/redis.service';
+import { CloudflareService } from '../../src/common/cloudflare/cloudflare.service';
 
 describe('SessionController', () => {
   let controller: SessionController;
@@ -17,14 +23,62 @@ describe('SessionController', () => {
     deleteSession: jest.fn(),
     updateSession: jest.fn(),
   };
+  const mockLogger = {
+    log: jest.fn(),
+    error: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        HttpModule.register({
+          timeout: 10000,
+          maxRedirects: 5,
+        }),
+      ],
       controllers: [SessionController],
       providers: [
         {
           provide: SessionService,
           useValue: mockSessionService,
+        },
+        {
+          provide: RateLimitGuard,
+          useValue: { canActivate: jest.fn().mockResolvedValue(true) },
+        },
+        {
+          provide: WINSTON_MODULE_NEST_PROVIDER,
+          useValue: mockLogger,
+        },
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn((key: string) => {
+              const defaults = {
+                'ratelimit.isEnabled': true,
+                'rateLimit.maxRequestsPerSec': 2,
+                'rateLimit.tempBlockDuration': 30,
+                'rateLimit.abuseThreshold': 10,
+                'rateLimit.maxSec': 10,
+              };
+              return defaults[key];
+            }),
+          },
+        },
+        {
+          provide: RedisService,
+          useValue: {
+            get: jest.fn(),
+            set: jest.fn(),
+            incr: jest.fn(),
+            expire: jest.fn(),
+          },
+        },
+        {
+          provide: CloudflareService,
+          useValue: {
+            blockIp: jest.fn().mockResolvedValue(true),
+          },
         },
       ],
     }).compile();

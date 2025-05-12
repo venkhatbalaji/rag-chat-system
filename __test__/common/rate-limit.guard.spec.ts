@@ -9,20 +9,24 @@ describe('RateLimitGuard', () => {
     get: jest.fn((key: string) => {
       const config = {
         'ratelimit.isEnabled': true,
-        'rateLimit.windowSeconds': '600',
-        'rateLimit.maxRequests': '3',
+        'rateLimit.maxRequestsPerSec': 2,
+        'rateLimit.tempBlockDuration': 30,
+        'rateLimit.abuseThreshold': 10,
+        'rateLimit.maxSec': 10,
       };
       return config[key];
     }),
   };
 
   const mockRedisService = {
+    get: jest.fn(),
+    set: jest.fn(),
     incr: jest.fn(),
     expire: jest.fn(),
   };
 
   const mockCloudflareService = {
-    blockIp: jest.fn(),
+    blockIp: jest.fn().mockResolvedValue(true),
   };
 
   const mockLogger = {
@@ -55,7 +59,7 @@ describe('RateLimitGuard', () => {
   it('should allow request if rate limiting is disabled', async () => {
     mockConfigService.get = jest.fn((key: string) => {
       if (key === 'ratelimit.isEnabled') return false;
-      return '3';
+      return 3;
     });
 
     const result = await guard.canActivate(createMockContext());
@@ -63,13 +67,16 @@ describe('RateLimitGuard', () => {
   });
 
   it('should allow request within limit', async () => {
+    mockRedisService.get.mockResolvedValue(null); // not blocked
     mockRedisService.incr.mockResolvedValueOnce(1);
+
     const result = await guard.canActivate(createMockContext());
     expect(result).toBe(true);
   });
 
   it('should allow request if Redis fails (fail-open)', async () => {
-    mockRedisService.incr.mockRejectedValue(new Error('Redis error'));
+    mockRedisService.get.mockRejectedValue(new Error('Redis down'));
+
     const result = await guard.canActivate(createMockContext());
     expect(result).toBe(true);
   });

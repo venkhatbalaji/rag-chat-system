@@ -6,8 +6,10 @@ import {
   MongooseHealthIndicator,
 } from '@nestjs/terminus';
 import { RedisHealthIndicator } from './redis.health';
+import { ApiSecurity } from '@nestjs/swagger';
 
 @Controller('health')
+@ApiSecurity('API_KEY')
 export class HealthController {
   constructor(
     private health: HealthCheckService,
