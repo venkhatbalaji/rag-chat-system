@@ -64,6 +64,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    //consumer.apply(AuthMiddleware).exclude('/api/v1/health').forRoutes('*');
+    consumer.apply(AuthMiddleware).exclude('/api/v1/health').forRoutes('*');
   }
 }

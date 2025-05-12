@@ -69,7 +69,7 @@ Built with NestJS following:
 | Database         | MongoDB                          |
 | Containerization | Docker, Docker Compose           |
 | Auth             | API Key middleware               |
-| Rate Limiting    | Redis-based        |
+| Rate Limiting    | Redis-based                      |
 | Monitoring       | Custom Logger + Exception Filter |
 
 ---
@@ -102,7 +102,7 @@ main.ts
 ### 1. Clone the Repo
 
 \`\`\`bash
-git clone https://github.com/your-org/rag-chat-storage.git
+git clone https://github.com/venkhatbalaji/rag-chat-system
 cd rag-chat-storage
 \`\`\`
 
@@ -140,7 +140,7 @@ npm run start:dev
 | PATCH  | `/api/v1/sessions/:id`                | Rename or mark/unmark session as favorite |
 | GET    | `/api/v1/sessions/:sessionId/message` | Retrieve messages in a session            |
 | POST   | `/api/v1/sessions/:sessionId/message` | Add a message to a session                |
-| GET    | `/api-docs`                           | Swagger UI (auto-generated docs)          |
+| GET    | `/docs`                               | Swagger UI (auto-generated docs)          |
 
 All APIs require the `x-api-key` header.
 --------|-------------------------|-------------------------------------|
@@ -150,7 +150,6 @@ All APIs require the `x-api-key` header.
 | GET | `/sessions/:id/messages`| Get message history (paginated) |
 | POST | `/messages` | Add message with optional context |
 | GET | `/health` | Health check endpoint |
-| GET | `/api-docs` | Swagger UI (auto-generated docs) |
 
 All APIs require the `x-api-key` header.
 
@@ -170,11 +169,11 @@ Example config in `main.ts`:
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 const config = new DocumentBuilder()
-.setTitle('RAG Chat Storage API')
-.setDescription('APIs for managing RAG chat sessions and messages')
-.setVersion('1.0')
-.addApiKey({ type: 'apiKey', name: 'x-api-key', in: 'header' }, 'API_KEY')
-.build();
+  .setTitle('RAG Chat Storage API')
+  .setDescription('APIs for managing RAG chat sessions and messages')
+  .setVersion('1.0')
+  .addApiKey({ type: 'apiKey', name: 'x-api-key', in: 'header' }, 'API_KEY')
+  .build();
 
 const document = SwaggerModule.createDocument(app, config);
 SwaggerModule.setup('api-docs', app, document);
