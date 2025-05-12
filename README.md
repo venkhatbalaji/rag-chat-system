@@ -143,16 +143,6 @@ npm run start:dev
 | GET    | `/docs`                               | Swagger UI (auto-generated docs)          |
 
 All APIs require the `x-api-key` header.
---------|-------------------------|-------------------------------------|
-| POST | `/sessions` | Create new session |
-| PATCH | `/sessions/:id` | Rename or toggle favorite |
-| DELETE | `/sessions/:id` | Delete session and its messages |
-| GET | `/sessions/:id/messages`| Get message history (paginated) |
-| POST | `/messages` | Add message with optional context |
-| GET | `/health` | Health check endpoint |
-
-All APIs require the `x-api-key` header.
-
 ---
 
 ## 📑 Swagger/OpenAPI Integration
