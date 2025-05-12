@@ -1,10 +1,10 @@
-# 🧠 RAG Chat Storage Microservice
+# RAG Chat Storage Microservice
 
 A production-ready NestJS microservice that stores and manages **chat sessions** and **messages** from a Retrieval-Augmented Generation (RAG) system. It includes APIs to manage sessions, store assistant and user messages with context, and ensures scalability, security, and observability.
 
 ---
 
-## 📌 What is RAG (Retrieval-Augmented Generation)?
+## What is RAG (Retrieval-Augmented Generation)?
 
 **Retrieval-Augmented Generation (RAG)** enhances language models by combining external knowledge (retrieved documents) with the user prompt to improve accuracy and factual grounding.
 
@@ -20,13 +20,13 @@ This service fits into step 3 — storing **chat history and associated retrieva
 
 ---
 
-## 🏗️ High-Level Architecture
+## High-Level Architecture
 
 ![High-Level Architecture](./Big-Picture.png)
 
 ---
 
-## 🧱 Internal Microservice Architecture
+## Internal Microservice Architecture
 
 This service supports:
 
@@ -46,7 +46,7 @@ Built with NestJS following:
 
 ---
 
-## 📦 Features
+## Features
 
 ✅ Create, rename, favorite, and delete chat sessions  
 ✅ Store user/assistant messages with optional RAG context  
@@ -60,7 +60,7 @@ Built with NestJS following:
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer            | Tech                             |
 | ---------------- | -------------------------------- |
@@ -74,7 +74,7 @@ Built with NestJS following:
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 src/
@@ -97,7 +97,7 @@ main.ts
 
 ---
 
-## ⚙️ Setup Instructions
+## Setup Instructions
 
 ### 1. Clone the Repo
 
@@ -129,7 +129,7 @@ npm run start:dev
 
 ---
 
-## 📌 Available APIs
+## Available APIs
 
 | Method | Endpoint                              | Description                               |
 | ------ | ------------------------------------- | ----------------------------------------- |
@@ -144,7 +144,7 @@ npm run start:dev
 
 ## All APIs require the `x-api-key` header.
 
-## 📑 Swagger/OpenAPI Integration
+## Swagger/OpenAPI Integration
 
 Swagger has been integrated using `@nestjs/swagger`. Access the interactive API docs at:
 
@@ -169,7 +169,7 @@ SwaggerModule.setup('docs', app, document);
 
 ---
 
-## 🧪 Bonus Features (Implemented)
+## Bonus Features (Implemented)
 
 - ✅ Dockerized MongoDB
 - ✅ Healthcheck endpoints (`/health`)
@@ -180,6 +180,6 @@ SwaggerModule.setup('docs', app, document);
 
 ---
 
-## 📖 License
+## License
 
 MIT
