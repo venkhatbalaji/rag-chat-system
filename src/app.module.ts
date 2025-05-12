@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import configuration from './config/configuration';
@@ -64,6 +69,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).exclude('/api/v1/health').forRoutes('*');
+    consumer
+      .apply(AuthMiddleware)
+      .exclude({ path: '/health', method: RequestMethod.ALL })
+      .forRoutes('*');
   }
 }
