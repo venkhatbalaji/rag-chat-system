@@ -1,73 +1,198 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# 🧠 RAG Chat Storage Microservice
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A production-ready NestJS microservice that stores and manages **chat sessions** and **messages** from a Retrieval-Augmented Generation (RAG) system. It includes APIs to manage sessions, store assistant and user messages with context, and ensures scalability, security, and observability.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 📌 What is RAG (Retrieval-Augmented Generation)?
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+**Retrieval-Augmented Generation (RAG)** enhances language models by combining external knowledge (retrieved documents) with the user prompt to improve accuracy and factual grounding.
 
-## Installation
+**Flow:**
 
-```bash
-$ npm install
+1. **User Input**
+2. **Retriever** queries a **Vector DB** for relevant content
+3. **RAG Storage Service** logs user prompt, response, and retrieved context
+4. **Generator (LLM)** creates final response
+5. **Storage** persists messages and sessions.
+
+This service fits into step 3 — storing **chat history and associated retrieval context**.
+
+---
+
+## 🏗️ High-Level Architecture
+
+![High-Level Architecture](./Big-Picture.png)
+
+---
+
+## 🧱 Internal Microservice Architecture
+
+This service supports:
+
+- Storing session-specific messages
+- Adding/retrieving message context
+- Basic session management (rename, favorite, delete)
+
+![Microservice HLD](./HLD.png)
+
+Built with NestJS following:
+
+- Modular structure
+- RESTful APIs
+- Middleware (Auth, Rate Limiting)
+- Global Exception Handling & Logging
+- MongoDB for persistence
+
+---
+
+## 📦 Features
+
+✅ Create, rename, favorite, and delete chat sessions  
+✅ Store user/assistant messages with optional RAG context  
+✅ Retrieve full or paginated message history  
+✅ API Key authentication  
+✅ Rate limiting  
+✅ Health check endpoints  
+✅ Centralized logging  
+✅ Dockerized setup  
+✅ Swagger API documentation
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer            | Tech                             |
+| ---------------- | -------------------------------- |
+| Framework        | NestJS                           |
+| Language         | TypeScript                       |
+| Database         | MongoDB                          |
+| Containerization | Docker, Docker Compose           |
+| Auth             | API Key middleware               |
+| Rate Limiting    | Redis-based        |
+| Monitoring       | Custom Logger + Exception Filter |
+
+---
+
+## 📁 Project Structure
+
+\`\`\`
+src/
+├── chat/
+│ ├── dto/
+│ ├── schemas/
+│ ├── chat.controller.ts
+│ ├── chat.service.ts
+│ └── chat.module.ts
+├── common/
+│ ├── middleware/
+│ ├── guards/
+│ ├── filters/
+│ ├── logger/
+│ ├── cloudflare/, redis/, utils/
+├── config/
+├── health/
+main.ts
+\`\`\`
+
+---
+
+## ⚙️ Setup Instructions
+
+### 1. Clone the Repo
+
+\`\`\`bash
+git clone https://github.com/your-org/rag-chat-storage.git
+cd rag-chat-storage
+\`\`\`
+
+### 2. Environment Setup
+
+\`\`\`bash
+cp .env.example .env
+\`\`\`
+
+Update values in \`.env\`
+
+### 3. Run with Docker
+
+\`\`\`bash
+docker-compose up --build
+\`\`\`
+
+### 4. Run Locally (Without Docker)
+
+\`\`\`bash
+npm install
+npm run start:dev
+\`\`\`
+
+---
+
+## 📌 Available APIs
+
+| Method | Endpoint                              | Description                               |
+| ------ | ------------------------------------- | ----------------------------------------- |
+| GET    | `/api/v1/health`                      | Health check endpoint                     |
+| GET    | `/api/v1/sessions`                    | List all sessions                         |
+| POST   | `/api/v1/sessions`                    | Create new session                        |
+| DELETE | `/api/v1/sessions/:id`                | Delete a session and its messages         |
+| PATCH  | `/api/v1/sessions/:id`                | Rename or mark/unmark session as favorite |
+| GET    | `/api/v1/sessions/:sessionId/message` | Retrieve messages in a session            |
+| POST   | `/api/v1/sessions/:sessionId/message` | Add a message to a session                |
+| GET    | `/api-docs`                           | Swagger UI (auto-generated docs)          |
+
+All APIs require the `x-api-key` header.
+--------|-------------------------|-------------------------------------|
+| POST | `/sessions` | Create new session |
+| PATCH | `/sessions/:id` | Rename or toggle favorite |
+| DELETE | `/sessions/:id` | Delete session and its messages |
+| GET | `/sessions/:id/messages`| Get message history (paginated) |
+| POST | `/messages` | Add message with optional context |
+| GET | `/health` | Health check endpoint |
+| GET | `/api-docs` | Swagger UI (auto-generated docs) |
+
+All APIs require the `x-api-key` header.
+
+---
+
+## 📑 Swagger/OpenAPI Integration
+
+Swagger has been integrated using `@nestjs/swagger`. Access the interactive API docs at:
+
+```
+http://localhost:3000/api-docs
 ```
 
-## Running the app
+Example config in `main.ts`:
 
-```bash
-# development
-$ npm run start
+\`\`\`ts
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
-# watch mode
-$ npm run start:dev
+const config = new DocumentBuilder()
+.setTitle('RAG Chat Storage API')
+.setDescription('APIs for managing RAG chat sessions and messages')
+.setVersion('1.0')
+.addApiKey({ type: 'apiKey', name: 'x-api-key', in: 'header' }, 'API_KEY')
+.build();
 
-# production mode
-$ npm run start:prod
-```
+const document = SwaggerModule.createDocument(app, config);
+SwaggerModule.setup('api-docs', app, document);
+\`\`\`
 
-## Test
+---
 
-```bash
-# unit tests
-$ npm run test
+## 🧪 Bonus Features (Implemented)
 
-# e2e tests
-$ npm run test:e2e
+- ✅ Dockerized MongoDB
+- ✅ Healthcheck endpoints (`/health`)
+- ✅ Centralized Winston logger
+- ✅ Global error handler
+- ✅ Swagger documentation
+- ✅ Basic test folder structure included
 
-# test coverage
-$ npm run test:cov
-```
+---
 
-## Support
+## 📖 License
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+MIT
