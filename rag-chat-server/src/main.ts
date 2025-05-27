@@ -40,7 +40,7 @@ async function bootstrap() {
 
   // Enable CORS
   app.enableCors({
-    origin: `${appName}.com`,
+    origin: [`${appName}.com`, 'http://localhost:3000'],
     methods: 'GET,OPTIONS,HEAD,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type, Accept, x-api-key',
   });
@@ -68,7 +68,7 @@ async function bootstrap() {
 
   app.enableShutdownHooks();
 
-  await app.listen(port || 3000);
+  await app.listen(port || 3001);
 }
 if (process.env.NODE_ENV === 'production') {
   AppClusterService.cluster(bootstrap);

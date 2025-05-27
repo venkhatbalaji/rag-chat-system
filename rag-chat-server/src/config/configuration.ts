@@ -3,6 +3,9 @@ export default () => ({
   env: process.env.NODE_ENV || 'development',
   port: parseInt(process.env.PORT || '3000', 10),
   apiKey: process.env.API_KEY,
+  jwt: {
+    secret: process.env.API_KEY,
+  },
   mongodb: {
     uri: process.env.MONGODB_URI,
     dbName: process.env.MONGODB_DB_NAME,

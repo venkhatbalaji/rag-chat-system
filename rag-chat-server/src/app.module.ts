@@ -7,8 +7,6 @@ import {
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import configuration from './config/configuration';
-import { Session } from './session/schemas/session.schema';
-import { Message } from './chat/schemas/message.schema';
 import { HealthModule } from './health/health.module';
 import { CloudflareService } from './common/cloudflare/cloudflare.service';
 import { HttpServiceWrapper } from './common/http/http.service';
@@ -18,9 +16,11 @@ import { createWinstonLoggerConfig } from './logger/winston.logger';
 import { RedisModule } from './common/redis/redis.module';
 import { SessionModule } from './session/session.module';
 import { ChatModule } from './chat/chat.module';
-import { AuthMiddleware } from './common/middleware/auth.middleware';
+import { JwtMiddleware } from './common/middleware/jwt.middleware';
 import { Document } from './mock/entities/document.entity';
 import { MongooseModule } from '@nestjs/mongoose';
+import { AuthModule } from './auth/auth.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -31,6 +31,14 @@ import { MongooseModule } from '@nestjs/mongoose';
         const appName = config.get<string>('appName');
         return createWinstonLoggerConfig(appName);
       },
+    }),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        secret: config.get<string>('jwt.secret'),
+        signOptions: { expiresIn: '1h' },
+      }),
     }),
     ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
     HttpModule.register({
@@ -60,6 +68,7 @@ import { MongooseModule } from '@nestjs/mongoose';
       }),
       inject: [ConfigService],
     }),
+    AuthModule,
     RedisModule,
     HealthModule,
     SessionModule,
@@ -70,8 +79,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(AuthMiddleware)
+      .apply(JwtMiddleware)
       .exclude({ path: '/health', method: RequestMethod.ALL })
+      .exclude({ path: '/auth/login', method: RequestMethod.ALL })
       .forRoutes('*');
   }
 }
