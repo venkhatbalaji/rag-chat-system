@@ -9,8 +9,6 @@ import {
 import { Session, SessionDocument } from '../session/schemas/session.schema';
 import { Model, Types } from 'mongoose';
 import { QueryMessagesDto } from './dto/query-messages.dto';
-import { RetrieverService } from '../mock/service/retriever.service';
-import { GeneratorService } from '../mock/service/generator.service';
 import { Response } from 'express';
 
 @Injectable()
@@ -21,8 +19,6 @@ export class ChatService {
 
     @InjectModel(Session.name)
     private readonly sessionModel: Model<SessionDocument>,
-    private readonly retrieverService: RetrieverService,
-    private readonly generatorService: GeneratorService,
   ) {}
 
   async processMessage(
@@ -39,7 +35,7 @@ export class ChatService {
     }
 
     //Retrieve contextual documents (RAG)
-    const sources = await this.retrieverService.search(content);
+    // const sources = await this.retrieverService.search(content);
 
     //Fetch and format previous conversation messages
     const history = await this.getMessagesBySession(sessionId, {
@@ -54,40 +50,58 @@ export class ChatService {
       .join('\n');
 
     //Save current user message along with context
-    await this.addMessage(sessionId, sender, content, sources);
+    await this.addMessage(sessionId, sender, content, [
+      {
+        similarityScore: 1,
+        snippet: finalAnswer,
+        source: 'Generated Response',
+      },
+    ]);
 
     //Prepare streaming response headers
     response.setHeader('Content-Type', 'text/event-stream');
     response.setHeader('Cache-Control', 'no-cache');
     response.setHeader('Connection', 'keep-alive');
 
-    const sourcesText = sources
+    const sourcesText = [
+      {
+        similarityScore: 1,
+        snippet: finalAnswer,
+        source: 'Generated Response',
+      },
+    ]
       .map((s) => s.snippet)
       .join('\n\n')
       .replace(/[\r\n]+/g, ' ')
       .replace(/"/g, '\\"');
 
     //Send prompt, context, and history to generator
-    await this.generatorService.streamReply(
-      {
-        history: formattedHistory,
-        prompt: content,
-        sources: sources.map((s) => s.snippet).join('\n\n'),
-      },
-      async (chunk) => {
-        // 📤 Stream each token/chunk back to client
-        finalAnswer += chunk;
-        response.write(
-          `data: ${JSON.stringify({
-            delta: { content: chunk, sources: sourcesText },
-            sessionId: sessionId,
-          })}\n\n`,
-        );
-      },
-    );
+    // await this.generatorService.streamReply(
+    //   {
+    //     history: formattedHistory,
+    //     prompt: content,
+    //     sources: sources.map((s) => s.snippet).join('\n\n'),
+    //   },
+    //   async (chunk) => {
+    //     // 📤 Stream each token/chunk back to client
+    //     finalAnswer += chunk;
+    //     response.write(
+    //       `data: ${JSON.stringify({
+    //         delta: { content: chunk, sources: sourcesText },
+    //         sessionId: sessionId,
+    //       })}\n\n`,
+    //     );
+    //   },
+    // );
 
     // Save the final assistant response to DB
-    await this.saveAIMessage(sessionId, finalAnswer, sources);
+    await this.saveAIMessage(sessionId, finalAnswer, [
+      {
+        similarityScore: 1,
+        snippet: finalAnswer,
+        source: 'Generated Response',
+      },
+    ]);
 
     // Close SSE stream
     response.end();

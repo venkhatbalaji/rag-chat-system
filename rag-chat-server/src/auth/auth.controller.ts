@@ -1,30 +1,45 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { Response } from 'express';
+import { GoogleUserDto } from './dto/google.user.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('login')
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  async googleAuth() {}
+
+  @Get('google/callback')
+  @UseGuards(AuthGuard('google'))
   @ApiOperation({ summary: 'Generate JWT access token' })
   @ApiResponse({
     status: 200,
-    description: 'Returns a signed JWT token',
+    description: 'Returns a signed JWT token in cookie',
     schema: {
       example: {
         access_token: 'eyJhbGciOi...',
       },
     },
   })
-  async login(@Body() body: LoginDto) {
-    const token = await this.authService.generateToken({
-      userId: body.userId,
-      email: body.email,
+  async googleAuthRedirect(@Req() req, @Res() res: Response) {
+    const token = await this.authService.signIn(req.user as GoogleUserDto);
+    res.cookie('access_token', token, {
+      maxAge: 86400,
+      sameSite: true,
+      secure: false,
     });
-
-    return { access_token: token };
+    return res.status(HttpStatus.OK);
   }
 }

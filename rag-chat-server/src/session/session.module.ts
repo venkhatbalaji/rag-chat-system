@@ -5,9 +5,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Message, MessageSchema } from '../chat/schemas/message.schema';
 import { Session, SessionSchema } from './schemas/session.schema';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { GeneratorService } from '../mock/service/generator.service';
-import { RetrieverService } from '../mock/service/retriever.service';
-import { Document } from '../mock/entities/document.entity';
 import { ChatService } from '../chat/chat.service';
 import { RedisModule } from '../common/redis/redis.module';
 import { ConfigService } from '@nestjs/config';
@@ -26,7 +23,6 @@ import { CloudflareService } from '../common/cloudflare/cloudflare.service';
       { name: Message.name, schema: MessageSchema },
       { name: Session.name, schema: SessionSchema },
     ]),
-    TypeOrmModule.forFeature([Document]),
   ],
   controllers: [SessionController],
   providers: [
@@ -35,8 +31,6 @@ import { CloudflareService } from '../common/cloudflare/cloudflare.service';
     CloudflareService,
     SessionService,
     ChatService,
-    RetrieverService,
-    GeneratorService,
   ],
   exports: [SessionService],
 })

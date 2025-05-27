@@ -17,7 +17,6 @@ import { RedisModule } from './common/redis/redis.module';
 import { SessionModule } from './session/session.module';
 import { ChatModule } from './chat/chat.module';
 import { JwtMiddleware } from './common/middleware/jwt.middleware';
-import { Document } from './mock/entities/document.entity';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
@@ -54,20 +53,6 @@ import { JwtModule } from '@nestjs/jwt';
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (config: ConfigService) => ({
-        type: 'postgres',
-        host: config.get<string>('database.host'),
-        port: config.get<number>('database.port'),
-        username: config.get<string>('database.username'),
-        password: config.get<string>('database.password'),
-        database: config.get<string>('database.name'),
-        entities: [Document],
-        synchronize: config.get<string>('env') === 'development',
-      }),
-      inject: [ConfigService],
-    }),
     AuthModule,
     RedisModule,
     HealthModule,
@@ -82,6 +67,8 @@ export class AppModule implements NestModule {
       .apply(JwtMiddleware)
       .exclude({ path: '/health', method: RequestMethod.ALL })
       .exclude({ path: '/auth/login', method: RequestMethod.ALL })
+      .exclude({ path: '/auth/google', method: RequestMethod.ALL })
+      .exclude({ path: '/auth/google/callback', method: RequestMethod.GET })
       .forRoutes('*');
   }
 }
