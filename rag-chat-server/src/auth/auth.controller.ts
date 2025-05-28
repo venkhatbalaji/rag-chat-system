@@ -45,7 +45,9 @@ export class AuthController {
       sameSite: 'lax',
       maxAge: 86400 * 1000,
     });
-    return res.redirect(`http://localhost:3000/?token=${token}`);
+    return res.redirect(
+      `${this.config.get<string>('redirectUrl')}?token=${token}`,
+    );
   }
 
   @Get('me')
