@@ -49,6 +49,7 @@ export class AuthService {
         avatarUrl: user.picture,
         provider: user.provider,
         providerId: user.providerId,
+        name: user.name,
       });
     }
 

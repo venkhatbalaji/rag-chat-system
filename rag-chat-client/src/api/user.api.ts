@@ -5,7 +5,7 @@ export class User {
   static async me() {
     try {
       const response = await axiosInstance.get(urls.user.me);
-      return response.data;
+      return response.data?.user;
     } catch (e) {
       return null;
     }
