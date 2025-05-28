@@ -3,7 +3,6 @@ import { ChatService } from './chat.service';
 import { ChatController } from './chat.controller';
 import { Message, MessageSchema } from '../chat/schemas/message.schema';
 import { MongooseModule } from '@nestjs/mongoose';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { Session, SessionSchema } from '../session/schemas/session.schema';
 import { RedisModule } from '../common/redis/redis.module';
 import { CloudflareService } from '../common/cloudflare/cloudflare.service';

@@ -5,7 +5,6 @@ import {
   RequestMethod,
 } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import configuration from './config/configuration';
 import { HealthModule } from './health/health.module';
 import { CloudflareService } from './common/cloudflare/cloudflare.service';

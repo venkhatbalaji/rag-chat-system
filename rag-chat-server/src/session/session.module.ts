@@ -4,7 +4,6 @@ import { SessionController } from './session.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Message, MessageSchema } from '../chat/schemas/message.schema';
 import { Session, SessionSchema } from './schemas/session.schema';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChatService } from '../chat/chat.service';
 import { RedisModule } from '../common/redis/redis.module';
 import { ConfigService } from '@nestjs/config';

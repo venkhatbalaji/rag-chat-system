@@ -8,7 +8,6 @@ import { RetrieverService } from '../../src/mock/service/retriever.service';
 import { GeneratorService } from '../../src/mock/service/generator.service';
 import { ChatService } from '../../src/chat/chat.service';
 import { Document } from '../../src/mock/entities/document.entity';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { CloudflareService } from '../../src/common/cloudflare/cloudflare.service';
 import { ConfigService } from '@nestjs/config';
 import { HttpServiceWrapper } from '../../src/common/http/http.service';
