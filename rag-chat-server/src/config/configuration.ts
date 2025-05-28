@@ -1,5 +1,6 @@
 export default () => ({
   appName: process.env.APP_NAME || 'chat.app',
+  domain: process.env.DOMAIN || '.ravex.io',
   env: process.env.NODE_ENV || 'development',
   redirectUrl: process.env.REDIRECT_URL || 'http://localhost:3000',
   port: parseInt(process.env.PORT || '3000', 10),

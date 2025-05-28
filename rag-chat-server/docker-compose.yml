@@ -5,6 +5,9 @@ services:
     ports:
       - '3000:3000'
     environment:
+      APP_NAME: raven
+      DOMAIN: .ravex.io
+      NODE_ENV: production
       PORT: 3000
       API_KEY: your-api-key
       DB_HOST: postgres
