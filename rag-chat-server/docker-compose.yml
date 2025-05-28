@@ -26,7 +26,7 @@ services:
       RATE_LIMIT_ABUSE_THRESHOLD: 10
       SLACK_ENABLED: 'false'
       CF_ENABLED: 'false'
-      REDIRECT_URL: https://dev-accounts.thefinstreet.co.uk:3002/
+      REDIRECT_URL: https://dev-raven.ravex.io:3002/
       GOOGLE_CLIENT_ID: 1042385486548-cbbarmkjt095oe1th1c3093rpnohk5s3.apps.googleusercontent.com
       GOOGLE_CLIENT_SECRET: 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
       GOOGLE_CALLBACK_URL: https://dev-rag.ravex.io/api/v1/auth/google/callback
