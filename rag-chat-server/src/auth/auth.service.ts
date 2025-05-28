@@ -22,8 +22,7 @@ export class AuthService {
     };
     const token = await this.jwtService.signAsync(payload);
     await this.redisService.set(`session:${payload.sub}`, user);
-    await this.redisService.expire(`session:${payload.sub}`, 86400); // 24 hours
-
+    await this.redisService.expire(`session:${payload.sub}`, 86400);
     return token;
   }
 
@@ -31,9 +30,7 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
-    console.log('Signing in user:', user);
     const userExists = await this.userModel.findOne({ email: user.email });
-
     if (!userExists) {
       const newUser = await this.userModel.create({
         email: user.email,
@@ -45,7 +42,6 @@ export class AuthService {
       return this.generateToken({
         sub: newUser._id,
         email: newUser.email,
-        picture: user.picture,
         avatarUrl: user.picture,
         provider: user.provider,
         providerId: user.providerId,

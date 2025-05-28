@@ -27,14 +27,11 @@ export class JwtMiddleware implements NestMiddleware {
       const decoded = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>('jwt.secret'),
       });
-
       const sessionKey = `session:${decoded.sub}`;
       const sessionData = await this.redisService.get(sessionKey);
-
       if (!sessionData) {
         throw new UnauthorizedException('Session expired or not found');
       }
-
       req['user'] = sessionData;
       next();
     } catch (err) {
