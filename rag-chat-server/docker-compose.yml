@@ -24,22 +24,8 @@ services:
       SLACK_ENABLED: 'false'
       CF_ENABLED: 'false'
     depends_on:
-      - postgres
       - mongo
       - redis
-
-  postgres:
-    image: postgres:15
-    container_name: chat_postgres
-    restart: always
-    ports:
-      - '5432:5432'
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: chatdb
-    volumes:
-      - pgdata:/var/lib/postgresql/data
 
   mongo:
     image: mongo:latest
@@ -63,5 +49,4 @@ services:
 
 volumes:
   mongodata:
-  pgdata:
   redisdata:
