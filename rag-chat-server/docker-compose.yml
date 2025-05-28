@@ -15,7 +15,7 @@ services:
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
       DB_NAME: chatdb
-      MONGODB_URI: mongodb://root:root@mongo:27017/rag_storage?authSource=admin
+      MONGODB_URI: mongodb+srv://rag_backend:Rag123@rag-chat.vaf92ko.mongodb.net/raven?retryWrites=true&w=majority&appName=rag-chat
       MONGODB_DB_NAME: rag_storage
       REDIS_HOST: redis
       REDIS_PORT: 6379

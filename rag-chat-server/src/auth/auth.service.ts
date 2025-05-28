@@ -31,7 +31,7 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
-
+    console.log('Signing in user:', user);
     const userExists = await this.userModel.findOne({ email: user.email });
 
     if (!userExists) {
