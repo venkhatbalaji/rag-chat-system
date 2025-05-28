@@ -17,7 +17,7 @@ export class JwtMiddleware implements NestMiddleware {
   ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
-    const token = req.cookies['access_token'] as string;
+    const token = req?.cookies?.['access_token'] as string;
 
     if (!token) {
       throw new UnauthorizedException('Authorization token missing');
