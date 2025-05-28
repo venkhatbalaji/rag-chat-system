@@ -45,6 +45,10 @@ export class AuthService {
       return this.generateToken({
         sub: newUser._id,
         email: newUser.email,
+        picture: user.picture,
+        avatarUrl: user.picture,
+        provider: user.provider,
+        providerId: user.providerId,
       });
     }
 
