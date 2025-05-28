@@ -40,7 +40,11 @@ async function bootstrap() {
 
   // Enable CORS
   app.enableCors({
-    origin: [`${appName}.com`, 'http://localhost:3000'],
+    origin: [
+      `${appName}.com`,
+      'http://localhost:3000',
+      'https://dev-accounts.thefinstreet.co.uk:3002',
+    ],
     methods: 'GET,OPTIONS,HEAD,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type, Accept, x-api-key',
   });
