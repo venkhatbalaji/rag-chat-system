@@ -45,8 +45,7 @@ async function bootstrap() {
       'http://localhost:3000',
       'https://dev-raven.ravex.io:3002',
     ],
-    methods: 'GET,OPTIONS,HEAD,PATCH,POST,DELETE',
-    allowedHeaders: 'Content-Type, Accept, x-api-key',
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'OPTIONS', 'DELETE'],
     credentials: true,
   });
 
