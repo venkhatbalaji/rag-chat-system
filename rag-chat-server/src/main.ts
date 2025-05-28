@@ -11,7 +11,7 @@ import helmet from 'helmet';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = app.get(ConfigService);
-  const appName = config.get<string>('appName') || 'Chat Storage Service';
+  const appName = config.get<string>('domain') || 'Chat Storage Service';
   const env = config.get<string>('env') || 'development';
   const port = config.get<number>('port') || 3000;
 
@@ -41,9 +41,9 @@ async function bootstrap() {
   // Enable CORS
   app.enableCors({
     origin: [
-      `${appName}.com`,
+      `${appName}.io`,
       'http://localhost:3000',
-      'https://dev-accounts.thefinstreet.co.uk:3002',
+      'https://dev-raven.ravex.io:3002',
     ],
     methods: 'GET,OPTIONS,HEAD,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type, Accept, x-api-key',
