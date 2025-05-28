@@ -6,10 +6,12 @@ import { ValidationPipe } from '@nestjs/common';
 import { GlobalExceptionFilter } from './common/filters/http-exception.filter';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { AppClusterService } from './common/utils/app-cluster.service';
+import * as cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.use(cookieParser());
   const config = app.get(ConfigService);
   const appName = config.get<string>('domain') || 'Chat Storage Service';
   const env = config.get<string>('env') || 'development';
