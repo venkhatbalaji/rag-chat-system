@@ -47,6 +47,7 @@ async function bootstrap() {
     ],
     methods: 'GET,OPTIONS,HEAD,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type, Accept, x-api-key',
+    credentials: true,
   });
 
   // Set Security Headers
