@@ -64,9 +64,9 @@ export class AuthController {
 
   @Post('logout')
   @ApiOperation({ summary: 'Logout the user' })
-  async logout(@Req() req: Request) {
-    const { sub: userId, provider, accessToken } = req.user as GoogleUserDto;
-    await this.authService.logout(userId, provider, accessToken);
-    return { message: 'Logout successful' };
+  async logout(@Req() req: Request, @Res() res: Response) {
+    const { sub: userId, provider } = req.user as GoogleUserDto;
+    await this.authService.logout(userId, provider);
+    return res.redirect(`${this.config.get<string>('redirectUrl')}`);
   }
 }

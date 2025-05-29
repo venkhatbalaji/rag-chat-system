@@ -73,7 +73,6 @@ export class AuthService {
   async logout(
     userId: string,
     provider: string,
-    accessToken: string,
   ): Promise<void> {
     const sessionKey = `session:${userId}:${provider}`;
     const result = await this.redisService.delete(sessionKey);
@@ -81,18 +80,6 @@ export class AuthService {
       throw new UnauthorizedException(
         'User session not found or already logged out',
       );
-    }
-    if (provider === 'google' && accessToken) {
-      try {
-        await this.httpService.get(
-          `https://accounts.google.com/o/oauth2/revoke?token=${accessToken}`,
-        );
-      } catch (err) {
-        this.logger.error(
-          'Failed to revoke Google token:',
-          err?.response?.data || err.message,
-        );
-      }
     }
   }
 }
