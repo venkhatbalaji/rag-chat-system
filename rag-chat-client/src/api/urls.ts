@@ -6,4 +6,10 @@ export default {
     me: "/api/v1/auth/me",
     logout: "/api/v1/auth/logout",
   },
+  session: {
+    list: "/api/v1/sessions",
+    create: "/api/v1/sessions",
+    delete: (id: string) => `/api/v1/sessions/${id}`,
+    update: (id: string) => `/api/v1/sessions/${id}`,
+  },
 };

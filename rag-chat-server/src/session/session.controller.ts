@@ -9,8 +9,9 @@ import {
   Query,
   Res,
   UseGuards,
+  Req,
 } from '@nestjs/common';
-import { Response as ExpressResponse } from 'express';
+import { Response as ExpressResponse, Request } from 'express';
 import { SessionService } from './session.service';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { UpdateSessionDto } from './dto/update-session.dto';
@@ -33,6 +34,7 @@ import {
 import { DeleteResult } from 'mongoose';
 import { StreamedMessageResponseDto } from '../chat/dto/streamed-message.dto';
 import { RateLimitGuard } from '../common/guards/rate-limit.guard';
+import { GoogleUserDto } from 'src/auth/dto/google.user.dto';
 
 @ApiTags('Session')
 @Controller('sessions')
@@ -47,8 +49,9 @@ export class SessionController {
   @ApiQuery({ name: 'userId', required: false })
   @UseGuards(RateLimitGuard)
   @ApiResponse({ status: 200, type: [SessionResponseDto] })
-  async getSessions(@Query() query: QuerySessionsDto) {
-    const sessions = await this.sessionService.getSessions(query);
+  async getSessions(@Req() req: Request, @Query() query: QuerySessionsDto) {
+    const { sub: userId } = req.user as GoogleUserDto;
+    const sessions = await this.sessionService.getSessions(query, userId);
     return createSuccessResponse(sessions);
   }
 
@@ -57,8 +60,13 @@ export class SessionController {
   @ApiBody({ type: CreateSessionDto })
   @UseGuards(RateLimitGuard)
   @ApiResponse({ status: 201, type: StreamedMessageResponseDto })
-  async create(@Body() body: CreateSessionDto, @Res() res: ExpressResponse) {
-    await this.sessionService.createSession(body.userId, body.title, res);
+  async create(
+    @Req() req: Request,
+    @Body() body: CreateSessionDto,
+    @Res() res: ExpressResponse,
+  ) {
+    const { sub: userId } = req.user as GoogleUserDto;
+    await this.sessionService.createSession(userId, body.title, res);
   }
 
   @Delete(':id')

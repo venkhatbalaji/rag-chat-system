@@ -9,9 +9,12 @@ import {
   FlaskConical,
   GalleryHorizontal,
   GalleryHorizontalEnd,
+  MessageSquare,
 } from "lucide-react";
 import { useSidebar } from "@/context/SidebarContext";
 import { useUser } from "@/context/UserContext";
+import { SessionType, useSession } from "@/hooks/useSession";
+import BirdCubeLoader from "./loader/BirdCubeLoader";
 
 const SidebarWrapper = styled.div<{ expanded: boolean }>`
   width: ${({ expanded }) => (expanded ? "280px" : "80px")};
@@ -158,9 +161,79 @@ const IconWrapper = styled.div`
   }
 `;
 
+const ChatSection = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+`;
+
+const ChatItem = styled.div`
+  font-size: 14px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: ${({ theme }) => theme.text};
+  background: ${({ theme }) => theme.background};
+  transition: background 0.2s;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    background: ${({ theme }) => theme.hoverBackground || "#f0f0f0"};
+  }
+`;
+
+const SectionTitle = styled.div`
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: ${({ theme }) => theme.subtleText};
+`;
+
+const SessionTitle = styled.div`
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const SessionDate = styled.div`
+  font-size: 12px;
+  color: ${({ theme }) => theme.subtleText};
+`;
+
+const EmptyState = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  color: ${({ theme }) => theme.subtleText};
+  text-align: center;
+  font-size: 14px;
+  svg {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 12px;
+    opacity: 0.6;
+  }
+`;
+
+const CenteredContent = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+`;
+
 export const Sidebar = () => {
   const [isMobile, setIsMobile] = useState(false);
   const { user, isLoading } = useUser();
+  const { data: chatSessions = [], isLoading: sessionsLoading } = useSession(
+    !!user && !isLoading
+  );
   const { expanded, toggle } = useSidebar();
   const pathname = usePathname();
 
@@ -191,17 +264,18 @@ export const Sidebar = () => {
           </Logo>
           <BrandName show={expanded}>RAVEN</BrandName>
         </Header>
-        {navItems.map(({ label, path, icon }) => (
-          <NavItem
-            key={label}
-            active={pathname === path}
-            title={label}
-            expanded={expanded}
-          >
-            <IconWrapper>{icon}</IconWrapper>
-            <Label show={expanded}>{label}</Label>
-          </NavItem>
-        ))}
+        {!user &&
+          navItems.map(({ label, path, icon }) => (
+            <NavItem
+              key={label}
+              active={pathname === path}
+              title={label}
+              expanded={expanded}
+            >
+              <IconWrapper>{icon}</IconWrapper>
+              <Label show={expanded}>{label}</Label>
+            </NavItem>
+          ))}
 
         {!isLoading && !user && expanded && (
           <div style={{ marginTop: "auto" }}>
@@ -211,6 +285,48 @@ export const Sidebar = () => {
               </SignInButton>
             )}
           </div>
+        )}
+        {user && expanded && (
+          <ChatSection>
+            {sessionsLoading ? (
+              <CenteredContent>
+                <BirdCubeLoader />
+              </CenteredContent>
+            ) : chatSessions.length > 0 ? (
+              chatSessions.map((session: SessionType) => (
+                <>
+                  <SectionTitle>Previous Sessions</SectionTitle>
+                  <ChatItem
+                    key={session._id}
+                    onClick={() => {
+                      window.location.href = `/chat/${session._id}`;
+                    }}
+                  >
+                    <SessionTitle>
+                      {session.title || "Untitled Session"}
+                    </SessionTitle>
+                    <SessionDate>
+                      {new Date(session.updatedAt).toLocaleDateString(
+                        undefined,
+                        {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        }
+                      )}
+                    </SessionDate>
+                  </ChatItem>
+                </>
+              ))
+            ) : (
+              <CenteredContent>
+                <EmptyState>
+                  <MessageSquare />
+                  <span>No conversations yet</span>
+                </EmptyState>
+              </CenteredContent>
+            )}
+          </ChatSection>
         )}
       </SidebarWrapper>
       {expanded && isMobile && <MobileOverlay onClick={toggle} />}

@@ -105,7 +105,7 @@ export const MainInput = () => {
 
       <ChatWrapper theme={theme}>
         <Input
-          placeholder="Message Copilot"
+          placeholder="Message Raven..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSend()}

@@ -131,6 +131,16 @@ const SignOutLink = styled.button`
   }
 `;
 
+const UserName = styled.div`
+  font-weight: 600;
+  color: ${({ theme }) => theme.text}; // Optional: use theme color
+`;
+
+const UserEmail = styled.div`
+  font-size: 14px;
+  color: ${({ theme }) => theme.subtleText}; // Use a themed subtle text color
+`;
+
 export const UserMenu = () => {
   const { isLoading, user } = useUser();
   const [open, setOpen] = useState(false);
@@ -178,8 +188,10 @@ export const UserMenu = () => {
                   height={80}
                   style={{ borderRadius: "50%", marginBottom: 8 }}
                 />
-                <div style={{ fontWeight: 600 }}>{user.name}</div>
-                <div style={{ fontSize: 14, color: "#888" }}>{user.email}</div>
+                <UserName style={{ fontWeight: 600 }}>{user.name}</UserName>
+                <UserEmail style={{ fontSize: 14, color: "#888" }}>
+                  {user.email}
+                </UserEmail>
               </div>
               <Section>
                 <Row>

@@ -21,8 +21,11 @@ export class SessionService {
     private readonly chatService: ChatService,
   ) {}
 
-  async getSessions(query: QuerySessionsDto) {
-    const { limit = 10, offset = 0, userId } = query;
+  async getSessions(
+    query: QuerySessionsDto,
+    userId: string,
+  ): Promise<Session[]> {
+    const { limit = 10, offset = 0 } = query;
 
     return this.sessionModel
       .find({ userId })
