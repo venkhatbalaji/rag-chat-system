@@ -5,6 +5,9 @@ export default () => ({
   redirectUrl: process.env.REDIRECT_URL || 'http://localhost:3000',
   port: parseInt(process.env.PORT || '3000', 10),
   apiKey: process.env.API_KEY,
+  generator: {
+    deepSeekUrl: process.env.DEEP_SEEK_URL || 'http://localhost:3000',
+  },
   jwt: {
     secret: process.env.API_KEY,
   },

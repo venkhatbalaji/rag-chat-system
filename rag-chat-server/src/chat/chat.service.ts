@@ -10,15 +10,16 @@ import { Session, SessionDocument } from '../session/schemas/session.schema';
 import { Model, Types } from 'mongoose';
 import { QueryMessagesDto } from './dto/query-messages.dto';
 import { Response } from 'express';
+import { DeepseekService } from '../common/generator/deepseek.service';
 
 @Injectable()
 export class ChatService {
   constructor(
     @InjectModel(Message.name)
     private readonly messageModel: Model<MessageDocument>,
-
     @InjectModel(Session.name)
     private readonly sessionModel: Model<SessionDocument>,
+    private readonly deepseekService: DeepseekService,
   ) {}
 
   async processMessage(
@@ -28,82 +29,54 @@ export class ChatService {
     response: Response,
   ) {
     let finalAnswer = '';
-    //Validate session existence
+
     const session = await this.sessionModel.findById(sessionId);
     if (!session) {
       throw new NotFoundException(`Session with ID ${sessionId} not found`);
     }
 
-    //Retrieve contextual documents (RAG)
-    // const sources = await this.retrieverService.search(content);
-
-    //Fetch and format previous conversation messages
     const history = await this.getMessagesBySession(sessionId, {
       limit: 20,
       offset: 0,
       search: content,
     });
 
-    // Format history specific to the content for more contextual information
     const formattedHistory = history
       .map((msg) => `${msg.sender}: ${msg.content}`)
       .join('\n');
 
-    //Save current user message along with context
-    await this.addMessage(sessionId, sender, content, [
-      {
-        similarityScore: 1,
-        snippet: finalAnswer,
-        source: 'Generated Response',
-      },
-    ]);
+    await this.addMessage(sessionId, sender, content, []);
 
-    //Prepare streaming response headers
     response.setHeader('Content-Type', 'text/event-stream');
     response.setHeader('Cache-Control', 'no-cache');
     response.setHeader('Connection', 'keep-alive');
 
-    const sourcesText = [
-      {
-        similarityScore: 1,
-        snippet: finalAnswer,
-        source: 'Generated Response',
-      },
-    ]
-      .map((s) => s.snippet)
-      .join('\n\n')
-      .replace(/[\r\n]+/g, ' ')
-      .replace(/"/g, '\\"');
+    try {
+      const fullPrompt = `${formattedHistory}\nUser: ${content}\nAI:`;
+      const result = await this.deepseekService.generate(fullPrompt);
+      finalAnswer = result;
+      response.write(
+        `data: ${JSON.stringify({
+          delta: { content: finalAnswer },
+          sessionId,
+        })}\n\n`,
+      );
+    } catch (err) {
+      response.write(
+        `data: ${JSON.stringify({
+          error: 'Failed to generate response',
+        })}\n\n`,
+      );
+    }
 
-    //Send prompt, context, and history to generator
-    // await this.generatorService.streamReply(
-    //   {
-    //     history: formattedHistory,
-    //     prompt: content,
-    //     sources: sources.map((s) => s.snippet).join('\n\n'),
-    //   },
-    //   async (chunk) => {
-    //     // 📤 Stream each token/chunk back to client
-    //     finalAnswer += chunk;
-    //     response.write(
-    //       `data: ${JSON.stringify({
-    //         delta: { content: chunk, sources: sourcesText },
-    //         sessionId: sessionId,
-    //       })}\n\n`,
-    //     );
-    //   },
-    // );
-
-    // Save the final assistant response to DB
     await this.saveAIMessage(sessionId, finalAnswer, [
       {
         similarityScore: 1,
         snippet: finalAnswer,
-        source: 'Generated Response',
+        source: 'DeepSeek',
       },
     ]);
 
-    // Close SSE stream
     response.end();
   }
 

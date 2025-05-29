@@ -33,6 +33,22 @@ services:
     depends_on:
       - mongo
       - redis
+      - deepseek
+  deepseek:
+    image: ollama/ollama
+    container_name: deepseek
+    ports:
+      - '11434:11434'
+    volumes:
+      - ollama:/root/.ollama
+    restart: always
+    entrypoint: >
+      sh -c "
+      ollama serve & 
+      sleep 5 &&
+      ollama pull deepseek-coder &&
+      tail -f /dev/null
+      "
 
   mongo:
     image: mongo:latest
@@ -57,3 +73,4 @@ services:
 volumes:
   mongodata:
   redisdata:
+  ollama:
