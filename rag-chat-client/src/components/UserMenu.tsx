@@ -139,7 +139,6 @@ export const UserMenu = () => {
   const handleSignOut = async () => {
     try {
       await User.logout();
-      window.location.reload();
     } catch (error) {
       console.error("Failed to sign out:", error);
     }

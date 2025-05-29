@@ -67,6 +67,8 @@ export class AuthController {
   async logout(@Req() req: Request, @Res() res: Response) {
     const { sub: userId, provider } = req.user as GoogleUserDto;
     await this.authService.logout(userId, provider);
-    return res.redirect(`${this.config.get<string>('redirectUrl')}`);
+    return res.redirect(
+      `https://appengine.google.com/_ah/logout?continue=${this.config.get<string>('redirectUrl')}`,
+    );
   }
 }
