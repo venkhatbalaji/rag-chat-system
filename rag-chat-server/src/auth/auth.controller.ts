@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   HttpStatus,
+  Post,
   Req,
   Res,
   UseGuards,
@@ -43,7 +44,7 @@ export class AuthController {
       domain: this.config.get<string>('domain'),
       path: '/',
       secure: this.config.get<string>('env') === 'production',
-      httpOnly: true, 
+      httpOnly: true,
       sameSite: 'none',
       maxAge: 86400 * 1000,
     });
@@ -59,5 +60,13 @@ export class AuthController {
     return {
       user: req.user,
     };
+  }
+
+  @Post('logout')
+  @ApiOperation({ summary: 'Logout the user' })
+  async logout(@Req() req: Request) {
+    const { sub: userId, provider } = req.user as GoogleUserDto;
+    await this.authService.logout(userId, provider);
+    return { message: 'Logout successful' };
   }
 }

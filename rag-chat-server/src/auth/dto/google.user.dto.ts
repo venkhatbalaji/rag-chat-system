@@ -2,6 +2,9 @@ import { IsEmail, IsOptional, IsString } from 'class-validator';
 
 export class GoogleUserDto {
   @IsString()
+  sub?: string;
+
+  @IsString()
   providerId: string;
 
   @IsEmail()

@@ -58,4 +58,14 @@ export class AuthService {
       name: user.name,
     });
   }
+
+  async logout(userId: string, provider: string): Promise<void> {
+    const sessionKey = `session:${userId}:${provider}`;
+    const result = await this.redisService.delete(sessionKey);
+    if (!result) {
+      throw new UnauthorizedException(
+        'User session not found or already logged out',
+      );
+    }
+  }
 }
