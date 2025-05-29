@@ -9,6 +9,7 @@ import { CloudflareService } from '../common/cloudflare/cloudflare.service';
 import { ConfigService } from '@nestjs/config';
 import { HttpServiceWrapper } from '../common/http/http.service';
 import { HttpModule } from '@nestjs/axios';
+import { DeepseekService } from '../common/generator/deepseek.service';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { HttpModule } from '@nestjs/axios';
     HttpServiceWrapper,
     ChatService,
     CloudflareService,
+    DeepseekService,
   ],
 })
 export class ChatModule {}
