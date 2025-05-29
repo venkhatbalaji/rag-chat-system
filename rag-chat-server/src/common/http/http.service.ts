@@ -1,8 +1,11 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 import { AxiosRequestConfig } from 'axios';
 import { createFailureResponse } from '../utils/response.util';
-import { HttpService } from '@nestjs/axios';
+import * as https from 'https';
+import * as http from 'http';
+import { URL } from 'url';
 
 @Injectable()
 export class HttpServiceWrapper {
@@ -52,5 +55,37 @@ export class HttpServiceWrapper {
         status,
       );
     }
+  }
+  streamPost(
+    url: string,
+    data: any,
+    onData: (chunk: Buffer) => void,
+    onEnd: () => void,
+    onError: (err: Error) => void,
+  ) {
+    const parsedUrl = new URL(url);
+    const isHttps = parsedUrl.protocol === 'https:';
+    const reqModule = isHttps ? https : http;
+
+    const req = reqModule.request(
+      {
+        hostname: parsedUrl.hostname,
+        port: parsedUrl.port || (isHttps ? 443 : 80),
+        path: parsedUrl.pathname + parsedUrl.search,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'text/event-stream',
+        },
+      },
+      (res) => {
+        res.on('data', onData);
+        res.on('end', onEnd);
+      },
+    );
+
+    req.on('error', onError);
+    req.write(JSON.stringify(data));
+    req.end();
   }
 }

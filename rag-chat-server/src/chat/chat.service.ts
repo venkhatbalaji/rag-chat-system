@@ -19,7 +19,7 @@ export class ChatService {
     private readonly messageModel: Model<MessageDocument>,
     @InjectModel(Session.name)
     private readonly sessionModel: Model<SessionDocument>,
-    private readonly deepseekService: DeepseekService,
+    private readonly deepSeekService: DeepseekService,
   ) {}
 
   async processMessage(
@@ -28,12 +28,9 @@ export class ChatService {
     content: string,
     response: Response,
   ) {
-    let finalAnswer = '';
-
     const session = await this.sessionModel.findById(sessionId);
-    if (!session) {
+    if (!session)
       throw new NotFoundException(`Session with ID ${sessionId} not found`);
-    }
 
     const history = await this.getMessagesBySession(sessionId, {
       limit: 20,
@@ -45,52 +42,41 @@ export class ChatService {
       .map((msg) => `${msg.sender}: ${msg.content}`)
       .join('\n');
 
-    await this.addMessage(sessionId, sender, content, []);
+    // Save user message
+    await this.addMessage(sessionId, sender, content);
 
-    response.setHeader('Content-Type', 'text/event-stream');
-    response.setHeader('Cache-Control', 'no-cache');
-    response.setHeader('Connection', 'keep-alive');
+    const fullPrompt = `${formattedHistory}\nUser: ${content}\nAI:`;
 
     try {
-      const fullPrompt = `${formattedHistory}\nUser: ${content}\nAI:`;
-      const result = await this.deepseekService.generate(fullPrompt);
-      finalAnswer = result;
-      response.write(
-        `data: ${JSON.stringify({
-          delta: { content: finalAnswer },
-          sessionId,
-        })}\n\n`,
+      // Await the streamed response to complete and capture the full answer
+      const finalAnswer = await this.deepSeekService.generate(
+        fullPrompt,
+        response,
+        sessionId,
       );
+
+      if (finalAnswer) {
+        await this.saveAIMessage(sessionId, finalAnswer, [
+          {
+            similarityScore: 1,
+            snippet: finalAnswer,
+            source: 'DeepSeek',
+          },
+        ]);
+      }
     } catch (err) {
       response.write(
-        `data: ${JSON.stringify({
-          error: 'Failed to generate response',
-        })}\n\n`,
+        `data: ${JSON.stringify({ error: 'Generation failed' })}\n\n`,
       );
+      response.end();
     }
-
-    await this.saveAIMessage(sessionId, finalAnswer, [
-      {
-        similarityScore: 1,
-        snippet: finalAnswer,
-        source: 'DeepSeek',
-      },
-    ]);
-
-    response.end();
   }
 
-  async addMessage(
-    sessionId: string,
-    sender: SenderType,
-    content: string,
-    sources: Source[],
-  ) {
+  async addMessage(sessionId: string, sender: SenderType, content: string) {
     const message = await this.messageModel.create({
       sessionId: new Types.ObjectId(sessionId),
       sender,
       content,
-      sources,
     });
 
     return message;

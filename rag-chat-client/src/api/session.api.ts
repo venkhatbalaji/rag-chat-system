@@ -11,7 +11,7 @@ export class Session {
     }
   }
 
-  static async create(data: { title: string; description?: string }) {
+  static async create(data: { title: string }) {
     try {
       const response = await axiosInstance.post(urls.session.create, data);
       return response.data?.session;

@@ -4,6 +4,7 @@ import { useTheme } from "@emotion/react";
 import { useState } from "react";
 import { SendHorizonal } from "lucide-react";
 import { useUser } from "@/context/UserContext";
+import { useGenerate } from "@/hooks/useGenerate";
 
 const Container = styled.div`
   display: flex;
@@ -87,12 +88,13 @@ const SendButton = styled.button`
 
 export const MainInput = () => {
   const { user } = useUser();
+  const { mutate, data, error } = useGenerate();
   const [message, setMessage] = useState("");
   const theme = useTheme();
   const handleSend = () => {
-    if (!message.trim()) return;
-    console.log("Send message:", message);
-    setMessage("");
+    mutate({
+      title: "My Chat Session",
+    });
   };
 
   return (
