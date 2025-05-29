@@ -6,6 +6,7 @@ import { ThemeToggle } from "./ThemeToggle";
 import styled from "@emotion/styled";
 import { useUser } from "@/context/UserContext";
 import { User as UserIcon } from "lucide-react";
+import { User } from "@/api/user.api";
 
 const Container = styled.div`
   position: relative;
@@ -111,10 +112,38 @@ const SignInLink = styled.a`
   }
 `;
 
+const SignOutLink = styled.button`
+  margin-top: 1rem;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: ${({ theme }) => theme.text};
+  color: ${({ theme }) => theme.background};
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  display: inline-block;
+  text-decoration: none;
+  transition: background 0.2s;
+  cursor: pointer;
+  &:hover {
+    background: ${({ theme }) => theme.subtleText};
+    color: ${({ theme }) => theme.background};
+  }
+`;
+
 export const UserMenu = () => {
   const { isLoading, user } = useUser();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+
+  const handleSignOut = async () => {
+    try {
+      await User.logout();
+      window.location.reload();
+    } catch (error) {
+      console.error("Failed to sign out:", error);
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -161,6 +190,16 @@ export const UserMenu = () => {
                   </ThemeToggleWrapper>
                 </Row>
               </Section>
+              <div
+                style={{
+                  textAlign: "center",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <SignOutLink onClick={handleSignOut}>Sign Out</SignOutLink>
+              </div>
             </>
           ) : (
             <>

@@ -8,6 +8,8 @@ import { GoogleStrategy } from './strategy/google.strategy';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './schema/user.schema';
 import { RedisModule } from '../common/redis/redis.module';
+import { HttpServiceWrapper } from '../common/http/http.service';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -23,9 +25,13 @@ import { RedisModule } from '../common/redis/redis.module';
       }),
     }),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    HttpModule.register({
+      timeout: 10000,
+      maxRedirects: 5,
+    }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, GoogleStrategy],
+  providers: [AuthService, GoogleStrategy, HttpServiceWrapper],
   exports: [AuthService],
 })
 export class AuthModule {}

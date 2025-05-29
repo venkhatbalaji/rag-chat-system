@@ -65,8 +65,8 @@ export class AuthController {
   @Post('logout')
   @ApiOperation({ summary: 'Logout the user' })
   async logout(@Req() req: Request) {
-    const { sub: userId, provider } = req.user as GoogleUserDto;
-    await this.authService.logout(userId, provider);
+    const { sub: userId, provider, accessToken } = req.user as GoogleUserDto;
+    await this.authService.logout(userId, provider, accessToken);
     return { message: 'Logout successful' };
   }
 }

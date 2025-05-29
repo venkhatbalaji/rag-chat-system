@@ -1,10 +1,14 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './schema/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { GoogleUserDto } from './dto/google.user.dto';
 import { RedisService } from '../common/redis/redis.service';
+import { HttpServiceWrapper } from 'src/common/http/http.service';
+import { Logger } from '../logger/logger.service';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { access } from 'fs';
 
 @Injectable()
 export class AuthService {
@@ -13,6 +17,9 @@ export class AuthService {
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
     private readonly redisService: RedisService,
+    private readonly httpService: HttpServiceWrapper,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER)
+    private readonly logger: Logger,
   ) {}
 
   async generateToken(user: any): Promise<string> {
@@ -46,6 +53,8 @@ export class AuthService {
         provider: user.provider,
         providerId: user.providerId,
         name: user.name,
+        accessToken: user.accessToken,
+        refreshToken: user.refreshToken,
       });
     }
 
@@ -56,16 +65,34 @@ export class AuthService {
       provider: user.provider,
       providerId: user.providerId,
       name: user.name,
+      accessToken: user.accessToken,
+      refreshToken: user.refreshToken,
     });
   }
 
-  async logout(userId: string, provider: string): Promise<void> {
+  async logout(
+    userId: string,
+    provider: string,
+    accessToken: string,
+  ): Promise<void> {
     const sessionKey = `session:${userId}:${provider}`;
     const result = await this.redisService.delete(sessionKey);
     if (!result) {
       throw new UnauthorizedException(
         'User session not found or already logged out',
       );
+    }
+    if (provider === 'google' && accessToken) {
+      try {
+        await this.httpService.get(
+          `https://accounts.google.com/o/oauth2/revoke?token=${accessToken}`,
+        );
+      } catch (err) {
+        this.logger.error(
+          'Failed to revoke Google token:',
+          err?.response?.data || err.message,
+        );
+      }
     }
   }
 }

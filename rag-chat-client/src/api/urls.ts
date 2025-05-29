@@ -4,5 +4,6 @@ export default {
   },
   user: {
     me: "/api/v1/auth/me",
+    logout: "/api/v1/auth/logout",
   },
 };

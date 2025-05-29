@@ -19,4 +19,13 @@ export class User {
       return null;
     }
   }
+
+  static async logout() {
+    try {
+      const response = await axiosInstance.post(urls.user.logout);
+      return response.data;
+    } catch (e) {
+      return null;
+    }
+  }
 }
