@@ -1,10 +1,10 @@
 import { axiosInstance, baseUrl } from "./config";
 import urls from "./urls";
 
-export class Session {
-  static async list() {
+export class Message {
+  static async list(sessionId: string) {
     try {
-      const response = await axiosInstance.get(urls.session.list);
+      const response = await axiosInstance.get(urls.chat.list(sessionId));
       return response.data?.data || [];
     } catch (e) {
       return [];
@@ -12,19 +12,22 @@ export class Session {
   }
 
   static async createWithStream(
-    data: { title: string },
+    data: { title: string; sessionId: string },
     onData: (chunk: string) => void
   ): Promise<void> {
     try {
-      const response = await fetch(`${baseUrl}${urls.session.create}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "text/event-stream",
-        },
-        body: JSON.stringify({ title: data.title }),
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${baseUrl}${urls.chat.create(data?.sessionId)}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "text/event-stream",
+          },
+          body: JSON.stringify({ title: data.title }),
+          credentials: "include",
+        }
+      );
       if (!response.ok || !response.body) {
         throw new Error("Stream failed to start.");
       }
@@ -52,27 +55,6 @@ export class Session {
       }
     } catch (error) {
       console.error("Streaming error:", error);
-    }
-  }
-
-  static async delete(id: string) {
-    try {
-      const response = await axiosInstance.delete(urls.session.delete(id));
-      return response.data?.success || false;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  static async update(
-    id: string,
-    data: { title?: string; description?: string }
-  ) {
-    try {
-      const response = await axiosInstance.put(urls.session.update(id), data);
-      return response.data?.session;
-    } catch (e) {
-      return null;
     }
   }
 }

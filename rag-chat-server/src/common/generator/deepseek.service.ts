@@ -18,35 +18,42 @@ export class DeepseekService {
     prompt: string,
     response: Response,
     sessionId: string,
-  ): Promise<string> {
+  ): Promise<{ finalAnswer: string; chunks: any[] }> {
+    const chunks: any[] = [];
     let finalAnswer = '';
 
-    // Setup headers for SSE
     response.setHeader('Content-Type', 'text/event-stream');
     response.setHeader('Cache-Control', 'no-cache');
     response.setHeader('Connection', 'keep-alive');
 
-    return new Promise<string>((resolve) => {
+    return new Promise((resolve) => {
       this.http.streamPost(
         `${this.baseUrl}/api/generate`,
         { model: 'deepseek-coder', prompt, stream: true },
         (chunk) => {
           const token = chunk.toString();
           finalAnswer += token;
+
+          const message = {
+            model: 'deepseek-coder',
+            created_at: new Date().toISOString(),
+            content: token,
+          };
+          chunks.push(message);
           response.write(
             `data: ${JSON.stringify({ delta: { content: token }, sessionId })}\n\n`,
           );
         },
         () => {
           response.end();
-          resolve(finalAnswer.trim());
+          resolve({ finalAnswer: finalAnswer.trim(), chunks });
         },
         (err) => {
           response.write(
             `data: ${JSON.stringify({ error: 'Streaming failed' })}\n\n`,
           );
           response.end();
-          resolve('');
+          resolve({ finalAnswer: '', chunks: [] });
         },
       );
     });

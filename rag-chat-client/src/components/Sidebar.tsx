@@ -16,6 +16,7 @@ import { useSidebar } from "@/context/SidebarContext";
 import { useUser } from "@/context/UserContext";
 import { SessionType, useSession } from "@/hooks/useSession";
 import BirdCubeLoader from "./loader/BirdCubeLoader";
+import { useRouter } from "next/navigation";
 
 const SidebarWrapper = styled.div<{ expanded: boolean }>`
   width: ${({ expanded }) => (expanded ? "280px" : "80px")};
@@ -61,6 +62,7 @@ const Header = styled.div<{ expanded: boolean }>`
   transform: ${({ expanded }) =>
     expanded ? "translateX(0)" : "translateX(-20px)"};
   transition: all 0.3s ease-in-out;
+  cursor: pointer;
 `;
 
 const Logo = styled.div`
@@ -245,6 +247,7 @@ const safeFormatDate = (input?: string | Date) => {
 };
 
 export const Sidebar = () => {
+  const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
   const { user, isLoading } = useUser();
   const { data: chatSessions = [], isLoading: sessionsLoading } = useSession(
@@ -280,7 +283,7 @@ export const Sidebar = () => {
         <ToggleButton onClick={toggle}>
           {expanded ? <GalleryHorizontalEnd /> : <GalleryHorizontal />}
         </ToggleButton>
-        <Header expanded={expanded}>
+        <Header onClick={() => router.push("/")} expanded={expanded}>
           <Logo>
             <Image src="/logo.svg" alt="Logo" width={40} height={40} />
           </Logo>

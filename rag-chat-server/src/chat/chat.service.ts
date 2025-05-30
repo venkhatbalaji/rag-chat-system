@@ -49,18 +49,18 @@ export class ChatService {
 
     try {
       // Await the streamed response to complete and capture the full answer
-      const finalAnswer = await this.deepSeekService.generate(
+      const { finalAnswer, chunks } = await this.deepSeekService.generate(
         fullPrompt,
         response,
         sessionId,
       );
 
-      if (finalAnswer) {
+      if (chunks?.length) {
         await this.saveAIMessage(sessionId, finalAnswer, [
           {
             similarityScore: 1,
             snippet: finalAnswer,
-            source: 'DeepSeek',
+            source: 'deepseek-coder',
           },
         ]);
       }

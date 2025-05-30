@@ -91,20 +91,12 @@ const SendButton = styled.button`
   }
 `;
 
-const MessageBox = styled.div`
-  padding: 1rem;
-  background: ${({ theme }) => theme.background};
-  border-radius: 12px;
-  font-size: 1rem;
-  color: ${({ theme }) => theme.text};
-`;
-
 export const MainInput = () => {
   const { user } = useUser();
   const theme = useTheme();
   const [message, setMessage] = useState("");
 
-  const { isLoading, sendMessage, responseText } = useSessionStream();
+  const { isLoading, sendMessage } = useSessionStream();
 
   const handleSend = () => {
     if (!message.trim()) return;
@@ -128,7 +120,6 @@ export const MainInput = () => {
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
           />
-
           <SendButton onClick={handleSend} aria-label="Send message">
             {isLoading ? (
               <Loader2 className="animate-spin" />
@@ -137,8 +128,6 @@ export const MainInput = () => {
             )}
           </SendButton>
         </InputRow>
-
-        {responseText && <MessageBox theme={theme}>{responseText}</MessageBox>}
       </ChatWrapper>
     </Container>
   );

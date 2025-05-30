@@ -12,4 +12,8 @@ export default {
     delete: (id: string) => `/api/v1/sessions/${id}`,
     update: (id: string) => `/api/v1/sessions/${id}`,
   },
+  chat: {
+    list: (id: string) => `/api/v1/sessions/${id}/message`,
+    create: (id: string) => `/api/v1/sessions/${id}/message`,
+  },
 };
