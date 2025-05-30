@@ -1,10 +1,10 @@
 "use client";
 import styled from "@emotion/styled";
 import { useTheme } from "@emotion/react";
-import { useState } from "react";
-import { SendHorizonal } from "lucide-react";
+import { useState, useEffect } from "react";
+import { SendHorizonal, Loader2 } from "lucide-react";
 import { useUser } from "@/context/UserContext";
-import { useGenerate } from "@/hooks/useGenerate";
+import { useSessionStream } from "@/hooks/useSessionStream";
 
 const Container = styled.div`
   display: flex;
@@ -21,19 +21,24 @@ const Greeting = styled.h1`
   font-weight: 600;
   text-align: center;
   color: ${({ theme }) => theme.text};
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
 `;
 
 const ChatWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 700px;
+  width: 100%;
+`;
+
+const InputRow = styled.div`
   display: flex;
   align-items: center;
   background: #ffffff;
   padding: 1rem;
   border-radius: 20px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-  max-width: 700px;
-  width: 100%;
-  gap: 12px;
   border: 1px solid ${({ theme }) => theme.border};
 `;
 
@@ -86,15 +91,25 @@ const SendButton = styled.button`
   }
 `;
 
+const MessageBox = styled.div`
+  padding: 1rem;
+  background: ${({ theme }) => theme.background};
+  border-radius: 12px;
+  font-size: 1rem;
+  color: ${({ theme }) => theme.text};
+`;
+
 export const MainInput = () => {
   const { user } = useUser();
-  const { mutate, data, error } = useGenerate();
-  const [message, setMessage] = useState("");
   const theme = useTheme();
+  const [message, setMessage] = useState("");
+
+  const { isLoading, sendMessage, responseText } = useSessionStream();
+
   const handleSend = () => {
-    mutate({
-      title: "My Chat Session",
-    });
+    if (!message.trim()) return;
+    sendMessage(message);
+    setMessage("");
   };
 
   return (
@@ -105,17 +120,25 @@ export const MainInput = () => {
           : "Hi there, what should we dive into today?"}
       </Greeting>
 
-      <ChatWrapper theme={theme}>
-        <Input
-          placeholder="Message Raven..."
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSend()}
-        />
+      <ChatWrapper>
+        <InputRow theme={theme}>
+          <Input
+            placeholder="Message Raven..."
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSend()}
+          />
 
-        <SendButton onClick={handleSend} aria-label="Send message">
-          <SendHorizonal />
-        </SendButton>
+          <SendButton onClick={handleSend} aria-label="Send message">
+            {isLoading ? (
+              <Loader2 className="animate-spin" />
+            ) : (
+              <SendHorizonal />
+            )}
+          </SendButton>
+        </InputRow>
+
+        {responseText && <MessageBox theme={theme}>{responseText}</MessageBox>}
       </ChatWrapper>
     </Container>
   );

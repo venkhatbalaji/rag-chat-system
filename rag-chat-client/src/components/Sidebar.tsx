@@ -1,5 +1,6 @@
 "use client";
 
+import { isToday, isYesterday } from "date-fns";
 import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -192,15 +193,20 @@ const SectionTitle = styled.div`
 `;
 
 const SessionTitle = styled.div`
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 15px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 `;
 
 const SessionDate = styled.div`
-  font-size: 12px;
+  font-size: 13px;
   color: ${({ theme }) => theme.subtleText};
+`;
+
+const SessionGroup = styled.div`
+  margin-bottom: 24px;
 `;
 
 const EmptyState = styled.div`
@@ -228,30 +234,46 @@ const CenteredContent = styled.div`
   padding: 1rem;
 `;
 
+const safeFormatDate = (input?: string | Date) => {
+  const d = new Date(input || "");
+  if (isNaN(d.getTime())) return "Invalid Date";
+  return d.toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+};
+
 export const Sidebar = () => {
   const [isMobile, setIsMobile] = useState(false);
   const { user, isLoading } = useUser();
   const { data: chatSessions = [], isLoading: sessionsLoading } = useSession(
     !!user && !isLoading
   );
+  const todaySessions = chatSessions.filter((s) =>
+    isToday(new Date(s.createdAt))
+  );
+  const yesterDaySessions = chatSessions.filter((s) =>
+    isYesterday(new Date(s.createdAt))
+  );
+  const previousSessions = chatSessions.filter(
+    (s) =>
+      !isToday(new Date(s.createdAt)) && !isYesterday(new Date(s.createdAt))
+  );
   const { expanded, toggle } = useSidebar();
   const pathname = usePathname();
-
   const navItems = [
     { label: "Discover", icon: <Binoculars />, path: "/discover" },
     { label: "Labs", icon: <FlaskConical />, path: "/labs" },
   ];
-
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
     };
-
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
-
   return (
     <>
       <SidebarWrapper expanded={expanded}>
@@ -264,6 +286,7 @@ export const Sidebar = () => {
           </Logo>
           <BrandName show={expanded}>RAVEN</BrandName>
         </Header>
+
         {!user &&
           navItems.map(({ label, path, icon }) => (
             <NavItem
@@ -292,39 +315,84 @@ export const Sidebar = () => {
               <CenteredContent>
                 <BirdCubeLoader />
               </CenteredContent>
-            ) : chatSessions.length > 0 ? (
-              chatSessions.map((session: SessionType) => (
-                <>
-                  <SectionTitle>Previous Sessions</SectionTitle>
-                  <ChatItem
-                    key={session._id}
-                    onClick={() => {
-                      window.location.href = `/chat/${session._id}`;
-                    }}
-                  >
-                    <SessionTitle>
-                      {session.title || "Untitled Session"}
-                    </SessionTitle>
-                    <SessionDate>
-                      {new Date(session.updatedAt).toLocaleDateString(
-                        undefined,
-                        {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        }
-                      )}
-                    </SessionDate>
-                  </ChatItem>
-                </>
-              ))
             ) : (
-              <CenteredContent>
-                <EmptyState>
-                  <MessageSquare />
-                  <span>No conversations yet</span>
-                </EmptyState>
-              </CenteredContent>
+              <>
+                {todaySessions.length > 0 && (
+                  <>
+                    <SessionGroup>
+                      <SectionTitle>Today</SectionTitle>
+                      {todaySessions.map((session: SessionType) => (
+                        <ChatItem
+                          key={session._id}
+                          onClick={() => {
+                            window.location.href = `/chat/${session._id}`;
+                          }}
+                        >
+                          <SessionTitle>
+                            {session.title || "New Session"}
+                          </SessionTitle>
+                          <SessionDate>
+                            {safeFormatDate(session.createdAt)}
+                          </SessionDate>
+                        </ChatItem>
+                      ))}
+                    </SessionGroup>
+                  </>
+                )}
+                {yesterDaySessions.length > 0 && (
+                  <>
+                    <SessionGroup>
+                      <SectionTitle>Yesterday</SectionTitle>
+                      {yesterDaySessions.map((session: SessionType) => (
+                        <ChatItem
+                          key={session._id}
+                          onClick={() => {
+                            window.location.href = `/chat/${session._id}`;
+                          }}
+                        >
+                          <SessionTitle>
+                            {session.title || "New Session"}
+                          </SessionTitle>
+                          <SessionDate>
+                            {safeFormatDate(session.createdAt)}
+                          </SessionDate>
+                        </ChatItem>
+                      ))}
+                    </SessionGroup>
+                  </>
+                )}
+                {previousSessions.length > 0 && (
+                  <>
+                    <SessionGroup>
+                      <SectionTitle>Previous Sessions</SectionTitle>
+                      {previousSessions.map((session: SessionType) => (
+                        <ChatItem
+                          key={session._id}
+                          onClick={() => {
+                            window.location.href = `/chat/${session._id}`;
+                          }}
+                        >
+                          <SessionTitle>
+                            {session.title || "New Session"}
+                          </SessionTitle>
+                          <SessionDate>
+                            {safeFormatDate(session.createdAt)}
+                          </SessionDate>
+                        </ChatItem>
+                      ))}
+                    </SessionGroup>
+                  </>
+                )}
+                {todaySessions.length === 0 &&
+                  previousSessions.length === 0 && (
+                    <CenteredContent>
+                      <EmptyState>
+                        <MessageSquare />
+                        <span>No conversations yet</span>
+                      </EmptyState>
+                    </CenteredContent>
+                  )}
+              </>
             )}
           </ChatSection>
         )}

@@ -5,7 +5,7 @@ export interface SessionType {
   _id: string;
   title: string;
   isFavorite: boolean;
-  createdA: string;
+  createdAt: string;
   updatedAt: string;
 }
 
