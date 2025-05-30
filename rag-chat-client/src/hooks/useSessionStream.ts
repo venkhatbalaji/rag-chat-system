@@ -13,6 +13,7 @@ export const useSessionStream = () => {
       await Session.createWithStream(
         { title: sessionTitle, sessionId: sessionID },
         (chunk) => {
+          console.log("Received chunk:", chunk);
           setResponseText((prev) => prev + chunk);
         }
       );

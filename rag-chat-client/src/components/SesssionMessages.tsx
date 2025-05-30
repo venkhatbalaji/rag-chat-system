@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { SenderType, useMessages } from "@/hooks/useMessages";
+import { MessageType, SenderType, useMessages } from "@/hooks/useMessages";
 import { useUser } from "@/context/UserContext";
 import styled from "@emotion/styled";
 import BirdCubeLoader from "./loader/BirdCubeLoader";
@@ -10,6 +10,8 @@ import { Loader2, SendHorizonal } from "lucide-react";
 import { useTheme } from "@emotion/react";
 import { useSessionById } from "@/hooks/useSessionById";
 import { useSessionStream } from "@/hooks/useSessionStream";
+import { useSession } from "@/hooks/useSession";
+import { TypingDots } from "./loader/TypingDots";
 
 const CenteredContent = styled.div`
   flex: 1;
@@ -135,19 +137,46 @@ const MainColumn = styled.div`
   gap: 1.5rem;
 `;
 
+const TypingIndicator = styled.div`
+  align-self: flex-start;
+  background-color: ${({ theme }) => theme.chatBubble.agent};
+  color: #111;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  max-width: 70%;
+  font-style: italic;
+  animation: blink 1.4s infinite;
+  @keyframes blink {
+    0% {
+      opacity: 0.2;
+    }
+    20% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0.2;
+    }
+  }
+`;
+
 const ChatSessionPage = () => {
   const { id } = useParams();
   const theme = useTheme();
   const [message, setMessage] = useState("");
   const { user, isLoading } = useUser();
+  const { refetchSessions } = useSession();
+  const [localMessages, setLocalMessages] = useState<MessageType[]>([]);
+
   const { data: session, isLoading: sessionIdLoading } = useSessionById(
     id as string,
     !!user && !isLoading
   );
-  const { data: sessionMessages = [], isLoading: messageLoading } = useMessages(
-    id as string,
-    !!user && !isLoading
-  );
+  const {
+    data: sessionMessages = [],
+    isLoading: messageLoading,
+    refetch,
+  } = useMessages(id as string, !!user && !isLoading);
   const {
     isLoading: isMessageLoading,
     sendMessage,
@@ -156,10 +185,34 @@ const ChatSessionPage = () => {
   useEffect(() => {
     if (session && session?.triggered === false) {
       sendMessage(session.title, id as string);
+      refetchSessions();
+      refetch();
     }
   }, [session, id]);
+  useEffect(() => {
+    if (responseText) {
+      setLocalMessages((prev) => [
+        ...prev,
+        {
+          sender: SenderType.AGENT,
+          content: responseText,
+          _id: crypto.randomUUID(),
+          createdAt: new Date().toISOString(),
+        },
+      ]);
+    }
+  }, [responseText]);
   const handleSend = () => {
     if (!message.trim()) return;
+    setLocalMessages((prev) => [
+      ...prev,
+      {
+        sender: SenderType.USER,
+        content: message,
+        _id: crypto.randomUUID(),
+        createdAt: new Date().toISOString(),
+      },
+    ]);
     sendMessage(message, id as string);
     setMessage("");
   };
@@ -173,7 +226,7 @@ const ChatSessionPage = () => {
         ) : (
           <>
             <ChatContainer>
-              {sessionMessages.map((msg, i) => (
+              {[...sessionMessages, ...localMessages].map((msg, i) => (
                 <MessageBubble key={i} sender={msg.sender}>
                   {Array.isArray(msg.content) ? (
                     msg.content.map((c: any, j: number) => (
@@ -184,6 +237,9 @@ const ChatSessionPage = () => {
                   )}
                 </MessageBubble>
               ))}
+              {isMessageLoading && (
+                <TypingDots />
+              )}
             </ChatContainer>
             <ChatWrapper>
               <InputRow theme={theme}>
@@ -201,7 +257,6 @@ const ChatSessionPage = () => {
                   )}
                 </SendButton>
               </InputRow>
-              {JSON.stringify(responseText)}
             </ChatWrapper>
           </>
         )}

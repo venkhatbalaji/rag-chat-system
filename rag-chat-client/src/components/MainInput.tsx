@@ -1,11 +1,11 @@
 "use client";
 import styled from "@emotion/styled";
 import { useTheme } from "@emotion/react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { SendHorizonal, Loader2 } from "lucide-react";
 import { useUser } from "@/context/UserContext";
-import { useSessionStream } from "@/hooks/useSessionStream";
 import { useCreateSession } from "@/hooks/useCreateSession";
+import { useRouter } from "next/navigation";
 
 const Container = styled.div`
   display: flex;
@@ -94,10 +94,17 @@ const SendButton = styled.button`
 
 export const MainInput = () => {
   const { user } = useUser();
+  const router = useRouter();
   const theme = useTheme();
   const [message, setMessage] = useState("");
 
-  const { mutate: createSession, isPending } = useCreateSession();
+  const { mutate: createSession, isPending } = useCreateSession({
+    onSuccess: (sessionId?: string | null) => {
+      if (typeof sessionId === "string" && sessionId.trim()) {
+        router.push(`/chat/${sessionId}`);
+      }
+    },
+  });
 
   const handleSend = () => {
     if (!message.trim()) return;

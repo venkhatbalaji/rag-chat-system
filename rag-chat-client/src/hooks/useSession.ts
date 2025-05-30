@@ -11,7 +11,7 @@ export interface SessionType {
 }
 
 export const useSession = (enabled: boolean = false) => {
-  return useQuery({
+  const query = useQuery({
     queryKey: ["session", "list"],
     queryFn: async () => {
       const res = await Session.list();
@@ -21,4 +21,9 @@ export const useSession = (enabled: boolean = false) => {
     retry: false,
     staleTime: 1000 * 60 * 5,
   });
+
+  return {
+    ...query,
+    refetchSessions: query.refetch,
+  };
 };

@@ -56,6 +56,7 @@ export class Session {
 
       while (true) {
         const { value, done } = await reader.read();
+        console.log("Received value:", value);
         if (done) break;
         const lines = value
           .split("\n")
