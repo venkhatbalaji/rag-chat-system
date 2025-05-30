@@ -62,7 +62,7 @@ export class SessionController {
   @ApiResponse({ status: 200, type: [SessionResponseDto] })
   async getSessionById(@Req() req: Request, @Param('id') sessionId: string) {
     const { sub: userId } = req.user as GoogleUserDto;
-    const session = await this.sessionService.getSessionById(sessionId, userId);
+    const session = await this.sessionService.getSessionById(userId, sessionId);
     return createSuccessResponse(session);
   }
 

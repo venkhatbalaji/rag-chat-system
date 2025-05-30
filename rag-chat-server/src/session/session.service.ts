@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Session, SessionDocument } from './schemas/session.schema';
-import { DeleteResult, Model, Types } from 'mongoose';
+import mongoose, { DeleteResult, Model } from 'mongoose';
 import { Response } from 'express';
 import {
   Message,
@@ -42,8 +42,8 @@ export class SessionService {
   }
 
   async getSessionById(userId: string, sessionID: string) {
-    const session = await this.sessionModel.findOne({
-      _id: sessionID,
+    const session = await this.sessionModel.findById({
+      _id: new mongoose.Types.ObjectId(sessionID),
       userId: userId,
     });
     return session;
