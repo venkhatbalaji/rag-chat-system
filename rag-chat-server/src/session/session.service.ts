@@ -42,7 +42,7 @@ export class SessionService {
   }
 
   async getSessionById(userId: string, sessionID: string) {
-    const session = await this.sessionModel.findById({
+    const session = await this.sessionModel.findOne({
       _id: sessionID,
       userId: userId,
     });
