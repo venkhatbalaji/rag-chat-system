@@ -68,11 +68,6 @@ export class ChatController {
     @Body() body: AddMessageDto,
     @Res() res: ExpressResponse,
   ) {
-    await this.chatService.processMessage(
-      sessionId,
-      body.sender,
-      body.content,
-      res,
-    );
+    this.chatService.processMessage(sessionId, body.sender, body.content, res);
   }
 }

@@ -66,7 +66,7 @@ export class SessionController {
     @Res() res: ExpressResponse,
   ) {
     const { sub: userId } = req.user as GoogleUserDto;
-    await this.sessionService.createSession(userId, body.title, res);
+    this.sessionService.createSession(userId, body.title, res);
   }
 
   @Delete(':id')
