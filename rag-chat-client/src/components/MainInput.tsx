@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { SendHorizonal, Loader2 } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 import { useSessionStream } from "@/hooks/useSessionStream";
+import { useCreateSession } from "@/hooks/useCreateSession";
 
 const Container = styled.div`
   display: flex;
@@ -96,11 +97,11 @@ export const MainInput = () => {
   const theme = useTheme();
   const [message, setMessage] = useState("");
 
-  const { isLoading, sendMessage } = useSessionStream();
+  const { mutate: createSession, isPending } = useCreateSession();
 
   const handleSend = () => {
     if (!message.trim()) return;
-    sendMessage(message);
+    createSession({ title: message.trim() });
     setMessage("");
   };
 
@@ -121,7 +122,7 @@ export const MainInput = () => {
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
           />
           <SendButton onClick={handleSend} aria-label="Send message">
-            {isLoading ? (
+            {isPending ? (
               <Loader2 className="animate-spin" />
             ) : (
               <SendHorizonal />

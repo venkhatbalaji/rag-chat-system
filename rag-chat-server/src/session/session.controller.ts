@@ -66,11 +66,7 @@ export class SessionController {
     @Res() res: ExpressResponse,
   ) {
     const { sub: userId } = req.user as GoogleUserDto;
-    await this.sessionService.stream(
-      userId,
-      body.title,
-      res,
-    );
+    await this.sessionService.stream(userId, body.title, res);
   }
 
   @Post()
@@ -80,10 +76,8 @@ export class SessionController {
   @ApiResponse({ status: 201, type: StreamedMessageResponseDto })
   async create(@Req() req: Request, @Body() body: CreateSessionDto) {
     const { sub: userId } = req.user as GoogleUserDto;
-    await this.sessionService.createSession(
-      userId,
-      body.title,
-    );
+    const id = await this.sessionService.createSession(userId, body.title);
+    return createSuccessResponse(id);
   }
 
   @Delete(':id')

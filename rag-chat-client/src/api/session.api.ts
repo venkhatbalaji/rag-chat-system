@@ -11,6 +11,19 @@ export class Session {
     }
   }
 
+  static async createSession(data: {
+    title: string;
+  }): Promise<string | null | undefined> {
+    try {
+      const response = await axiosInstance.post(urls.session.create, {
+        title: data.title,
+      });
+      return response.data?.data || null;
+    } catch (error) {
+      console.error("Streaming error:", error);
+    }
+  }
+
   static async createWithStream(
     data: { title: string },
     onData: (chunk: string) => void
