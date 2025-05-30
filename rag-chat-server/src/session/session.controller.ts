@@ -55,18 +55,35 @@ export class SessionController {
     return createSuccessResponse(sessions);
   }
 
-  @Post()
+  @Post('stream')
   @ApiOperation({ summary: 'Create a new session' })
   @ApiBody({ type: CreateSessionDto })
   @UseGuards(RateLimitGuard)
   @ApiResponse({ status: 201, type: StreamedMessageResponseDto })
-  async create(
+  async stream(
     @Req() req: Request,
     @Body() body: CreateSessionDto,
     @Res() res: ExpressResponse,
   ) {
     const { sub: userId } = req.user as GoogleUserDto;
-    this.sessionService.createSession(userId, body.title, res);
+    await this.sessionService.stream(
+      userId,
+      body.title,
+      res,
+    );
+  }
+
+  @Post()
+  @ApiOperation({ summary: 'Create a new session' })
+  @ApiBody({ type: CreateSessionDto })
+  @UseGuards(RateLimitGuard)
+  @ApiResponse({ status: 201, type: StreamedMessageResponseDto })
+  async create(@Req() req: Request, @Body() body: CreateSessionDto) {
+    const { sub: userId } = req.user as GoogleUserDto;
+    await this.sessionService.createSession(
+      userId,
+      body.title,
+    );
   }
 
   @Delete(':id')

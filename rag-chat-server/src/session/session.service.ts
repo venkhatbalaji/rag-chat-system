@@ -36,12 +36,16 @@ export class SessionService {
       .exec();
   }
 
-  async createSession(userId: string, title: string, res: Response) {
+  async createSession(userId: string, title: string) {
     const session = await this.sessionModel.create({ userId, title });
+    return session?._id;
+  }
+
+  async stream(sessionId: string, message: string, res: Response) {
     await this.chatService.processMessage(
-      session._id.toString(),
+      sessionId,
       SenderType.USER,
-      title,
+      message,
       res,
     );
   }

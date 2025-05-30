@@ -9,6 +9,7 @@ export default {
   session: {
     list: "/api/v1/sessions",
     create: "/api/v1/sessions",
+    stream: "/api/v1/sessions/stream",
     delete: (id: string) => `/api/v1/sessions/${id}`,
     update: (id: string) => `/api/v1/sessions/${id}`,
   },
