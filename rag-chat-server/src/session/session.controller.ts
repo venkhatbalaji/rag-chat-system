@@ -35,6 +35,7 @@ import { DeleteResult } from 'mongoose';
 import { StreamedMessageResponseDto } from '../chat/dto/streamed-message.dto';
 import { RateLimitGuard } from '../common/guards/rate-limit.guard';
 import { GoogleUserDto } from 'src/auth/dto/google.user.dto';
+import { StreamSessionDto } from './dto/stream-session.dto';
 
 @ApiTags('Session')
 @Controller('sessions')
@@ -67,10 +68,10 @@ export class SessionController {
 
   @Post('stream')
   @ApiOperation({ summary: 'Create a new session' })
-  @ApiBody({ type: CreateSessionDto })
+  @ApiBody({ type: StreamSessionDto })
   @UseGuards(RateLimitGuard)
-  @ApiResponse({ status: 201, type: StreamedMessageResponseDto })
-  async stream(@Body() body: CreateSessionDto, @Res() res: ExpressResponse) {
+  @ApiResponse({ status: 201, type: StreamSessionDto })
+  async stream(@Body() body: StreamSessionDto, @Res() res: ExpressResponse) {
     await this.sessionService.stream(body?.sessionId, body.title, res);
   }
 
