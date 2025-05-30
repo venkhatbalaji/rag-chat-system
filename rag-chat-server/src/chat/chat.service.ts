@@ -49,21 +49,22 @@ export class ChatService {
 
     try {
       // Await the streamed response to complete and capture the full answer
-      const { finalAnswer, chunks } = await this.deepSeekService.generate(
+      this.deepSeekService.generate(
         fullPrompt,
         response,
         sessionId,
+        async (finalAnswer, chunks) => {
+          if (chunks?.length) {
+            await this.saveAIMessage(sessionId, finalAnswer, [
+              {
+                similarityScore: 1,
+                source: 'deepseek-coder',
+                snippet: 'From deepseek-coder model',
+              },
+            ]);
+          }
+        },
       );
-
-      if (chunks?.length) {
-        await this.saveAIMessage(sessionId, finalAnswer, [
-          {
-            similarityScore: 1,
-            snippet: finalAnswer,
-            source: 'deepseek-coder',
-          },
-        ]);
-      }
     } catch (err) {
       response.write(
         `data: ${JSON.stringify({ error: 'Generation failed' })}\n\n`,
