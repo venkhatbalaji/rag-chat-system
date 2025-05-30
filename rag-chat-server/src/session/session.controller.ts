@@ -55,18 +55,23 @@ export class SessionController {
     return createSuccessResponse(sessions);
   }
 
+  @Get(':id')
+  @ApiOperation({ summary: 'Get session by id' })
+  @UseGuards(RateLimitGuard)
+  @ApiResponse({ status: 200, type: [SessionResponseDto] })
+  async getSessionById(@Req() req: Request, @Param('id') sessionId: string) {
+    const { sub: userId } = req.user as GoogleUserDto;
+    const session = await this.sessionService.getSessionById(sessionId, userId);
+    return createSuccessResponse(session);
+  }
+
   @Post('stream')
   @ApiOperation({ summary: 'Create a new session' })
   @ApiBody({ type: CreateSessionDto })
   @UseGuards(RateLimitGuard)
   @ApiResponse({ status: 201, type: StreamedMessageResponseDto })
-  async stream(
-    @Req() req: Request,
-    @Body() body: CreateSessionDto,
-    @Res() res: ExpressResponse,
-  ) {
-    const { sub: userId } = req.user as GoogleUserDto;
-    await this.sessionService.stream(userId, body.title, res);
+  async stream(@Body() body: CreateSessionDto, @Res() res: ExpressResponse) {
+    await this.sessionService.stream(body?.sessionId, body.title, res);
   }
 
   @Post()

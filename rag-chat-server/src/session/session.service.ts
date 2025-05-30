@@ -41,6 +41,14 @@ export class SessionService {
     return session?._id;
   }
 
+  async getSessionById(userId: string, sessionID: string) {
+    const session = await this.sessionModel.findById({
+      _id: sessionID,
+      userId: userId,
+    });
+    return session;
+  }
+
   async stream(sessionId: string, message: string, res: Response) {
     await this.chatService.processMessage(
       sessionId,

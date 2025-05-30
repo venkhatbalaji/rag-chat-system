@@ -56,18 +56,4 @@ export class ChatController {
     );
     return createSuccessResponse(message);
   }
-
-  @Post()
-  @ApiOperation({ summary: 'Add a message to a session with optional context' })
-  @ApiParam({ name: 'sessionId' })
-  @ApiBody({ type: AddMessageDto })
-  @UseGuards(RateLimitGuard)
-  @ApiResponse({ status: 201, type: StreamedMessageResponseDto })
-  async addMessage(
-    @Param('sessionId') sessionId: string,
-    @Body() body: AddMessageDto,
-    @Res() res: ExpressResponse,
-  ) {
-    this.chatService.processMessage(sessionId, body.sender, body.content, res);
-  }
 }

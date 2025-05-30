@@ -3,9 +3,14 @@ import { IsString } from 'class-validator';
 
 export class CreateSessionDto {
   @ApiProperty({
-    description: 'Optional title for the session',
-    required: false,
+    description: 'title for the session',
   })
   @IsString()
   title: string;
+
+  @ApiProperty({
+    description: 'session ID to stream messages',
+  })
+  @IsString()
+  sessionId: string;
 }

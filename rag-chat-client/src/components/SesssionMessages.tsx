@@ -8,7 +8,8 @@ import BirdCubeLoader from "./loader/BirdCubeLoader";
 import { useState } from "react";
 import { Loader2, SendHorizonal } from "lucide-react";
 import { useTheme } from "@emotion/react";
-import { useMessageStream } from "@/hooks/useChatStream";
+import { useSessionById } from "@/hooks/useSessionById";
+import { useSessionStream } from "@/hooks/useSessionStream";
 
 const CenteredContent = styled.div`
   flex: 1;
@@ -139,11 +140,19 @@ const ChatSessionPage = () => {
   const theme = useTheme();
   const [message, setMessage] = useState("");
   const { user, isLoading } = useUser();
+  const { data: session, isLoading: sessionIdLoading } = useSessionById(
+    id as string,
+    !!user && !isLoading
+  );
   const { data: sessionMessages = [], isLoading: messageLoading } = useMessages(
     id as string,
     !!user && !isLoading
   );
-  const { isLoading: isMessageLoading, sendMessage } = useMessageStream();
+  const {
+    isLoading: isMessageLoading,
+    sendMessage,
+    responseText,
+  } = useSessionStream();
   const handleSend = () => {
     if (!message.trim()) return;
     sendMessage(message, id as string);
@@ -187,6 +196,7 @@ const ChatSessionPage = () => {
                   )}
                 </SendButton>
               </InputRow>
+              {JSON.stringify(responseText)}
             </ChatWrapper>
           </>
         )}

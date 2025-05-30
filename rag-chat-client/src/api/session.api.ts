@@ -11,6 +11,15 @@ export class Session {
     }
   }
 
+  static async sessionById(sessionId: string) {
+    try {
+      const response = await axiosInstance.get(urls.session.byId(sessionId));
+      return response.data?.data || [];
+    } catch (e) {
+      return [];
+    }
+  }
+
   static async createSession(data: {
     title: string;
   }): Promise<string | null | undefined> {
@@ -25,7 +34,7 @@ export class Session {
   }
 
   static async createWithStream(
-    data: { title: string },
+    data: { title: string; sessionId: string },
     onData: (chunk: string) => void
   ): Promise<void> {
     try {
@@ -35,7 +44,7 @@ export class Session {
           "Content-Type": "application/json",
           Accept: "text/event-stream",
         },
-        body: JSON.stringify({ title: data.title }),
+        body: JSON.stringify({ title: data.title, sessionId: data.sessionId }),
         credentials: "include",
       });
       if (!response.ok || !response.body) {
