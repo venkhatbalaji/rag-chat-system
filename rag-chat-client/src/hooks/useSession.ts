@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 export interface SessionType {
   _id: string;
   title: string;
+  triggered: boolean;
   isFavorite: boolean;
   createdAt: string;
   updatedAt: string;

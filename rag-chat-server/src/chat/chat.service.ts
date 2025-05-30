@@ -32,6 +32,12 @@ export class ChatService {
     if (!session)
       throw new NotFoundException(`Session with ID ${sessionId} not found`);
 
+    if (!session?.triggered)
+      await this.sessionModel.updateOne(
+        { _id: sessionId },
+        { $set: { triggered: true } },
+      );
+      
     const history = await this.getMessagesBySession(sessionId, {
       limit: 20,
       offset: 0,

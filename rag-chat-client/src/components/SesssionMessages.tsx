@@ -5,7 +5,7 @@ import { SenderType, useMessages } from "@/hooks/useMessages";
 import { useUser } from "@/context/UserContext";
 import styled from "@emotion/styled";
 import BirdCubeLoader from "./loader/BirdCubeLoader";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader2, SendHorizonal } from "lucide-react";
 import { useTheme } from "@emotion/react";
 import { useSessionById } from "@/hooks/useSessionById";
@@ -153,6 +153,11 @@ const ChatSessionPage = () => {
     sendMessage,
     responseText,
   } = useSessionStream();
+  useEffect(() => {
+    if (session && session?.triggered === false) {
+      sendMessage(session.title, id as string);
+    }
+  }, [session, id]);
   const handleSend = () => {
     if (!message.trim()) return;
     sendMessage(message, id as string);

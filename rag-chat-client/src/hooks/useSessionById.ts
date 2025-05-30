@@ -7,7 +7,7 @@ export const useSessionById = (sessionId: string, enabled: boolean = false) => {
     queryKey: ["session", "sessionById"],
     queryFn: async () => {
       const res = await Session.sessionById(sessionId);
-      return res as SessionType[];
+      return res as SessionType;
     },
     enabled,
     retry: false,

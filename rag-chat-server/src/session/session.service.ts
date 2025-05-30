@@ -37,7 +37,11 @@ export class SessionService {
   }
 
   async createSession(userId: string, title: string) {
-    const session = await this.sessionModel.create({ userId, title });
+    const session = await this.sessionModel.create({
+      userId,
+      title,
+      triggered: false,
+    });
     return session?._id;
   }
 

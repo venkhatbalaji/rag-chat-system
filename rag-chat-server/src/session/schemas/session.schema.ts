@@ -12,6 +12,9 @@ export class Session extends Document {
   userId: string;
 
   @Prop({ required: true })
+  triggered: boolean;
+
+  @Prop({ required: true })
   title: string;
 
   @Prop({ default: false })

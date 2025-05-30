@@ -38,7 +38,7 @@ export class Session {
     onData: (chunk: string) => void
   ): Promise<void> {
     try {
-      const response = await fetch(`${baseUrl}${urls.session.create}`, {
+      const response = await fetch(`${baseUrl}${urls.session.stream}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
