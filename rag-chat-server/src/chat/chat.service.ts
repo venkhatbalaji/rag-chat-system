@@ -99,7 +99,7 @@ export class ChatService {
   }
 
   async getMessagesBySession(sessionId: string, query: QueryMessagesDto) {
-    const { limit = 20, offset = 0, search } = query;
+    const { limit = 10000, offset = 0, search } = query;
 
     const filters: any = { sessionId: new Types.ObjectId(sessionId) };
 

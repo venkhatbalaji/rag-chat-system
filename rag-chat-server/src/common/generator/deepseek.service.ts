@@ -27,7 +27,7 @@ export class DeepseekService {
     response.setHeader('Content-Type', 'text/event-stream');
     response.setHeader('Cache-Control', 'no-cache');
     response.setHeader('Connection', 'keep-alive');
-
+    response.flushHeaders();
     this.http.streamPost(
       `${this.baseUrl}/api/generate`,
       { model: 'deepseek-coder', prompt, stream: true },

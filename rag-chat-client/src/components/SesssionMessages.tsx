@@ -167,6 +167,9 @@ const ChatSessionPage = () => {
   const { user, isLoading } = useUser();
   const { refetchSessions } = useSession();
   const [localMessages, setLocalMessages] = useState<MessageType[]>([]);
+  const [streamingMessage, setStreamingMessage] = useState<MessageType | null>(
+    null
+  );
 
   const { data: session, isLoading: sessionIdLoading } = useSessionById(
     id as string,
@@ -190,18 +193,20 @@ const ChatSessionPage = () => {
     }
   }, [session, id]);
   useEffect(() => {
-    if (responseText) {
-      setLocalMessages((prev) => [
-        ...prev,
-        {
-          sender: SenderType.AGENT,
-          content: responseText,
-          _id: crypto.randomUUID(),
-          createdAt: new Date().toISOString(),
-        },
-      ]);
-    }
+    if (!responseText) return;
+    setStreamingMessage({
+      sender: SenderType.AGENT,
+      content: responseText,
+      _id: "streaming-agent-msg",
+      createdAt: new Date().toISOString(),
+    });
   }, [responseText]);
+  useEffect(() => {
+    if (!isMessageLoading && streamingMessage) {
+      setLocalMessages((prev) => [...prev, streamingMessage]);
+      setStreamingMessage(null);
+    }
+  }, [isMessageLoading]);
   const handleSend = () => {
     if (!message.trim()) return;
     setLocalMessages((prev) => [
@@ -226,8 +231,12 @@ const ChatSessionPage = () => {
         ) : (
           <>
             <ChatContainer>
-              {[...sessionMessages, ...localMessages].map((msg, i) => (
-                <MessageBubble key={i} sender={msg.sender}>
+              {[
+                ...sessionMessages,
+                ...localMessages,
+                ...(streamingMessage ? [streamingMessage] : []),
+              ].map((msg, i) => (
+                <MessageBubble key={msg._id || i} sender={msg.sender}>
                   {Array.isArray(msg.content) ? (
                     msg.content.map((c: any, j: number) => (
                       <Paragraph key={j}>{c.content}</Paragraph>
@@ -237,9 +246,7 @@ const ChatSessionPage = () => {
                   )}
                 </MessageBubble>
               ))}
-              {isMessageLoading && (
-                <TypingDots />
-              )}
+              {isMessageLoading && streamingMessage === null && <TypingDots />}
             </ChatContainer>
             <ChatWrapper>
               <InputRow theme={theme}>
