@@ -176,7 +176,7 @@ const ChatSessionPage = () => {
           createdAt: new Date().toISOString(),
         },
       ]);
-      sendMessage(session.title, id as string, selectedModel);
+      sendMessage(session.title, selectedModel, id as string);
       refetchSessions();
       refetch();
     }
@@ -207,7 +207,7 @@ const ChatSessionPage = () => {
         createdAt: new Date().toISOString(),
       },
     ]);
-    sendMessage(message, id as string, selectedModel);
+    sendMessage(message, selectedModel, id as string);
     setMessage("");
   };
   return (

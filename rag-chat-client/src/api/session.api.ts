@@ -44,7 +44,11 @@ export class Session {
           "Content-Type": "application/json",
           Accept: "text/event-stream",
         },
-        body: JSON.stringify({ title: data.title, sessionId: data.sessionId }),
+        body: JSON.stringify({
+          title: data.title,
+          sessionId: data.sessionId,
+          modelType: data.model,
+        }),
         credentials: "include",
       });
       if (!response.ok || !response.body) {

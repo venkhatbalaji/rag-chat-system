@@ -67,8 +67,8 @@ export class ChatService {
             await this.saveAIMessage(sessionId, finalAnswer, [
               {
                 similarityScore: 1,
-                source: 'deepseek-coder',
-                snippet: 'From deepseek-coder model',
+                source: modelType,
+                snippet: `From ${modelType} model`,
               },
             ]);
           }

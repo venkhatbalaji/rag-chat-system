@@ -48,6 +48,7 @@ services:
       ollama serve & 
       sleep 5 &&
       ollama pull deepseek-coder &&
+      ollama pull openchat &&
       tail -f /dev/null
       "
 
