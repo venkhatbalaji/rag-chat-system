@@ -37,7 +37,7 @@ export class ChatService {
         { _id: sessionId },
         { $set: { triggered: true } },
       );
-      
+
     const history = await this.getMessagesBySession(sessionId, {
       limit: 20,
       offset: 0,
@@ -45,13 +45,14 @@ export class ChatService {
     });
 
     const formattedHistory = history
-      .map((msg) => `${msg.sender}: ${msg.content}`)
+      .map((msg) => `${msg.sender === 'user' ? 'User' : 'AI'}: ${msg.content}`)
       .join('\n');
 
     // Save user message
     await this.addMessage(sessionId, sender, content);
 
-    const fullPrompt = `${formattedHistory}\nUser: ${content}\nAI:`;
+    const fullPrompt =
+      `You are Raven, a helpful, concise, and knowledgeable AI assistant.Conversation so far:${formattedHistory}User: ${content}AI:`.trim();
 
     try {
       // Await the streamed response to complete and capture the full answer

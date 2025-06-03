@@ -101,7 +101,7 @@ export const MainInput = () => {
   const { mutate: createSession, isPending } = useCreateSession({
     onSuccess: (sessionId?: string | null) => {
       if (typeof sessionId === "string" && sessionId.trim()) {
-        router.push(`/chat/${sessionId}`);
+        router.replace(`/chat/${sessionId}`);
       }
     },
   });

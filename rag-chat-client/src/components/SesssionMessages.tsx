@@ -137,29 +137,6 @@ const MainColumn = styled.div`
   gap: 1.5rem;
 `;
 
-const TypingIndicator = styled.div`
-  align-self: flex-start;
-  background-color: ${({ theme }) => theme.chatBubble.agent};
-  color: #111;
-  padding: 0.75rem 1rem;
-  border-radius: 12px;
-  font-size: 1rem;
-  max-width: 70%;
-  font-style: italic;
-  animation: blink 1.4s infinite;
-  @keyframes blink {
-    0% {
-      opacity: 0.2;
-    }
-    20% {
-      opacity: 1;
-    }
-    100% {
-      opacity: 0.2;
-    }
-  }
-`;
-
 const ChatSessionPage = () => {
   const { id } = useParams();
   const theme = useTheme();
@@ -186,12 +163,20 @@ const ChatSessionPage = () => {
     responseText,
   } = useSessionStream();
   useEffect(() => {
-    if (session && session?.triggered === false) {
+    if (!sessionIdLoading && session && session?.triggered === false) {
+      setLocalMessages([
+        {
+          sender: SenderType.USER,
+          content: session.title,
+          _id: crypto.randomUUID(),
+          createdAt: new Date().toISOString(),
+        },
+      ]);
       sendMessage(session.title, id as string);
       refetchSessions();
       refetch();
     }
-  }, [session, id]);
+  }, [session, id, sessionIdLoading]);
   useEffect(() => {
     if (!responseText) return;
     setStreamingMessage({
