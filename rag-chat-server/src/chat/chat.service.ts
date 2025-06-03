@@ -47,7 +47,7 @@ export class ChatService {
     });
 
     const formattedHistory = history
-      .map((msg) => `${msg.sender === 'user' ? 'User' : 'AI'}: ${msg.content}`)
+      .map((msg) => `${msg.sender}: ${msg.content}`)
       .join('\n');
 
     // Save user message
@@ -102,7 +102,7 @@ export class ChatService {
   }
 
   async getMessagesBySession(sessionId: string, query: QueryMessagesDto) {
-    const { limit = 10000, offset = 0, search } = query;
+    const { limit = 1000, offset = 0, search } = query;
 
     const filters: any = { sessionId: new Types.ObjectId(sessionId) };
 
