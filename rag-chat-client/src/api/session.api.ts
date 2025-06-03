@@ -34,7 +34,7 @@ export class Session {
   }
 
   static async createWithStream(
-    data: { title: string; sessionId: string },
+    data: { title: string; sessionId: string; model: string },
     onData: (chunk: string) => void
   ): Promise<void> {
     try {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { MessageType, SenderType, useMessages } from "@/hooks/useMessages";
 import { useUser } from "@/context/UserContext";
 import styled from "@emotion/styled";
@@ -12,6 +12,7 @@ import { useSessionById } from "@/hooks/useSessionById";
 import { useSessionStream } from "@/hooks/useSessionStream";
 import { useSession } from "@/hooks/useSession";
 import { TypingDots } from "./loader/TypingDots";
+import { ModelSelector } from "./ModelSelector";
 
 const CenteredContent = styled.div`
   flex: 1;
@@ -139,8 +140,11 @@ const MainColumn = styled.div`
 
 const ChatSessionPage = () => {
   const { id } = useParams();
+  const searchParams = useSearchParams();
+  const modelType = searchParams.get("model");
   const theme = useTheme();
   const [message, setMessage] = useState("");
+  const [selectedModel, setSelectedModel] = useState(modelType || "deep-seek");
   const { user, isLoading } = useUser();
   const { refetchSessions } = useSession();
   const [localMessages, setLocalMessages] = useState<MessageType[]>([]);
@@ -172,7 +176,7 @@ const ChatSessionPage = () => {
           createdAt: new Date().toISOString(),
         },
       ]);
-      sendMessage(session.title, id as string);
+      sendMessage(session.title, id as string, selectedModel);
       refetchSessions();
       refetch();
     }
@@ -203,7 +207,7 @@ const ChatSessionPage = () => {
         createdAt: new Date().toISOString(),
       },
     ]);
-    sendMessage(message, id as string);
+    sendMessage(message, id as string, selectedModel);
     setMessage("");
   };
   return (
@@ -235,6 +239,7 @@ const ChatSessionPage = () => {
             </ChatContainer>
             <ChatWrapper>
               <InputRow theme={theme}>
+                <ModelSelector onModelChange={(id) => setSelectedModel(id)} />
                 <Input
                   placeholder="Message Raven..."
                   value={message}

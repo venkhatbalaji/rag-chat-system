@@ -9,7 +9,7 @@ import { CloudflareService } from '../common/cloudflare/cloudflare.service';
 import { ConfigService } from '@nestjs/config';
 import { HttpServiceWrapper } from '../common/http/http.service';
 import { HttpModule } from '@nestjs/axios';
-import { DeepseekService } from '../common/generator/deepseek.service';
+import { DeepseekService } from '../common/generator/generator.service';
 
 @Module({
   imports: [

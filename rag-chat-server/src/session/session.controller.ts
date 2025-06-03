@@ -72,7 +72,12 @@ export class SessionController {
   @UseGuards(RateLimitGuard)
   @ApiResponse({ status: 201, type: StreamSessionDto })
   async stream(@Body() body: StreamSessionDto, @Res() res: ExpressResponse) {
-    await this.sessionService.stream(body?.sessionId, body.title, res);
+    await this.sessionService.stream(
+      body?.sessionId,
+      body.title,
+      body.modelType,
+      res,
+    );
   }
 
   @Post()

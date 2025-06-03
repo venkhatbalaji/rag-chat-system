@@ -6,6 +6,7 @@ import { SendHorizonal, Loader2 } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 import { useCreateSession } from "@/hooks/useCreateSession";
 import { useRouter } from "next/navigation";
+import { ModelSelector } from "./ModelSelector";
 
 const Container = styled.div`
   display: flex;
@@ -91,17 +92,17 @@ const SendButton = styled.button`
     }
   }
 `;
-
 export const MainInput = () => {
   const { user } = useUser();
   const router = useRouter();
   const theme = useTheme();
   const [message, setMessage] = useState("");
+  const [selectedModel, setSelectedModel] = useState("deep-seek");
 
   const { mutate: createSession, isPending } = useCreateSession({
     onSuccess: (sessionId?: string | null) => {
       if (typeof sessionId === "string" && sessionId.trim()) {
-        router.replace(`/chat/${sessionId}`);
+        router.replace(`/chat/${sessionId}?model=${selectedModel}`);
       }
     },
   });
@@ -122,6 +123,7 @@ export const MainInput = () => {
 
       <ChatWrapper>
         <InputRow theme={theme}>
+          <ModelSelector onModelChange={(id) => setSelectedModel(id)} />
           <Input
             placeholder="Message Raven..."
             value={message}

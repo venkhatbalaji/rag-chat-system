@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import {
   Message,
   MessageDocument,
+  ModelType,
   SenderType,
   Source,
 } from './schemas/message.schema';
@@ -10,7 +11,7 @@ import { Session, SessionDocument } from '../session/schemas/session.schema';
 import { Model, Types } from 'mongoose';
 import { QueryMessagesDto } from './dto/query-messages.dto';
 import { Response } from 'express';
-import { DeepseekService } from '../common/generator/deepseek.service';
+import { DeepseekService } from '../common/generator/generator.service';
 
 @Injectable()
 export class ChatService {
@@ -25,6 +26,7 @@ export class ChatService {
   async processMessage(
     sessionId: string,
     sender: SenderType,
+    modelType: ModelType = ModelType.DEEPSEEK,
     content: string,
     response: Response,
   ) {
@@ -52,14 +54,14 @@ export class ChatService {
     await this.addMessage(sessionId, sender, content);
 
     const fullPrompt =
-      `You are Raven, a helpful, concise, and knowledgeable AI assistant. Format your response clearly using code blocks and helpful comments.Conversation so far:${formattedHistory}, User: ${content}AI:`.trim();
-
+      `Format your response clearly using code blocks and helpful comments.Conversation so far:${formattedHistory}, User: ${content}AI:`.trim();
     try {
       // Await the streamed response to complete and capture the full answer
       this.deepSeekService.generate(
         fullPrompt,
         response,
         sessionId,
+        modelType,
         async (finalAnswer, chunks) => {
           if (chunks?.length) {
             await this.saveAIMessage(sessionId, finalAnswer, [

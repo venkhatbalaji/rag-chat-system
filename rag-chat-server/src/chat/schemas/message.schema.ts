@@ -1,10 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { v4 as uuidv4 } from 'uuid';
 import { SchemaTypes } from 'mongoose';
 
 export enum SenderType {
   USER = 'user',
   AGENT = 'agent',
+}
+
+export enum ModelType {
+  DEEPSEEK = 'deepseek-coder',
+  OPENCHAT = 'openchat',
 }
 
 export interface Source {
@@ -27,6 +31,9 @@ export class Message {
 
   @Prop({ required: true })
   content: string;
+
+  @Prop({ enum: ModelType, required: false })
+  model?: ModelType;
 
   @Prop({
     enum: SenderType,

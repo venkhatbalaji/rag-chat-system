@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { HttpServiceWrapper } from '../http/http.service';
 import { Response } from 'express';
 import { StreamedChunk } from './type';
+import { ModelType } from '../../chat/schemas/message.schema';
 
 @Injectable()
 export class DeepseekService {
@@ -19,6 +20,7 @@ export class DeepseekService {
     prompt: string,
     response: Response,
     sessionId: string,
+    modelType: ModelType,
     onComplete: (finalAnswer: string, chunks: StreamedChunk[]) => Promise<void>,
   ): Promise<void> {
     let finalAnswer = '';
@@ -30,7 +32,7 @@ export class DeepseekService {
     response.flushHeaders();
     this.http.streamPost(
       `${this.baseUrl}/api/generate`,
-      { model: 'deepseek-coder', prompt, stream: true },
+      { model: modelType, prompt, stream: true },
       (chunk) => {
         const token = JSON.parse(chunk.toString()) as StreamedChunk;
         chunks.push(token);

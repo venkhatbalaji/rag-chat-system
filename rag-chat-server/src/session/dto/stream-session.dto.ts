@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsEnum, IsString } from 'class-validator';
+
+export enum ModelTypeMapper {
+  DEEP_SEEK = 'deep-seek',
+  OPEN_CHAT = 'open-chat',
+}
 
 export class StreamSessionDto {
   @ApiProperty({
@@ -12,4 +17,12 @@ export class StreamSessionDto {
   })
   @IsString()
   sessionId: string;
+
+  @ApiProperty({
+    description: 'Model type used for generation',
+    enum: ModelTypeMapper,
+    example: ModelTypeMapper.DEEP_SEEK,
+  })
+  @IsEnum(ModelTypeMapper)
+  modelType: ModelTypeMapper;
 }

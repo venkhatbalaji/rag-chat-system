@@ -31,6 +31,7 @@ services:
       GOOGLE_CLIENT_SECRET: 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
       GOOGLE_CALLBACK_URL: https://dev-rag.ravex.io/api/v1/auth/google/callback
       DEEP_SEEK_URL: http://deepseek:11434
+      OPENCHAT_URL: http://deepseek:11434
     depends_on:
       - redis
       - deepseek

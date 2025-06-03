@@ -6,10 +6,12 @@ import { Response } from 'express';
 import {
   Message,
   MessageDocument,
+  ModelType,
   SenderType,
 } from '../chat/schemas/message.schema';
 import { QuerySessionsDto } from './dto/query-sessions.dto';
 import { ChatService } from '../chat/chat.service';
+import { ModelTypeMapper } from './dto/stream-session.dto';
 
 @Injectable()
 export class SessionService {
@@ -53,10 +55,18 @@ export class SessionService {
     return session;
   }
 
-  async stream(sessionId: string, message: string, res: Response) {
+  async stream(
+    sessionId: string,
+    message: string,
+    mapper: ModelTypeMapper,
+    res: Response,
+  ) {
     await this.chatService.processMessage(
       sessionId,
       SenderType.USER,
+      mapper === ModelTypeMapper.DEEP_SEEK
+        ? ModelType.DEEPSEEK
+        : ModelType.OPENCHAT,
       message,
       res,
     );
