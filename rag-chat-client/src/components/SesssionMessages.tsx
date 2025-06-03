@@ -13,6 +13,7 @@ import { useSessionStream } from "@/hooks/useSessionStream";
 import { useSession } from "@/hooks/useSession";
 import { TypingDots } from "./loader/TypingDots";
 import { ModelSelector } from "./ModelSelector";
+import { renderMarkdown } from "@/utils/renderMarkdown";
 
 const CenteredContent = styled.div`
   flex: 1;
@@ -228,10 +229,19 @@ const ChatSessionPage = () => {
                 <MessageBubble key={msg._id || i} sender={msg.sender}>
                   {Array.isArray(msg.content) ? (
                     msg.content.map((c: any, j: number) => (
-                      <Paragraph key={j}>{c.content}</Paragraph>
+                      <Paragraph
+                        key={j}
+                        dangerouslySetInnerHTML={{
+                          __html: renderMarkdown(msg.content),
+                        }}
+                      />
                     ))
                   ) : (
-                    <Paragraph>{msg.content}</Paragraph>
+                    <Paragraph
+                      dangerouslySetInnerHTML={{
+                        __html: renderMarkdown(msg.content),
+                      }}
+                    />
                   )}
                 </MessageBubble>
               ))}

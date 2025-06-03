@@ -6,6 +6,7 @@ import { Check, BrainCircuit, Bot } from "lucide-react";
 
 const Wrapper = styled.div`
   position: relative;
+  margin-right: 1rem;
 `;
 
 const SelectorButton = styled.button`
