@@ -54,7 +54,7 @@ export class ChatService {
     await this.addMessage(sessionId, sender, content);
 
     const fullPrompt =
-      `Format your response clearly using code blocks and helpful comments.Conversation so far:${formattedHistory}, User: ${content}AI:`.trim();
+      `You are Raven – a concise, knowledgeable AI assistant.Respond in **plain Markdown**.  Only wrap actual code snippets in \`\`\`language blocks, with useful comments.<conversation>${formattedHistory}User: ${content}</conversation> ### Raven:`.trim();
     try {
       // Await the streamed response to complete and capture the full answer
       this.deepSeekService.generate(
