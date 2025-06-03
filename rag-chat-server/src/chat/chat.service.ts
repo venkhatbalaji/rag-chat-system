@@ -52,7 +52,7 @@ export class ChatService {
     await this.addMessage(sessionId, sender, content);
 
     const fullPrompt =
-      `You are Raven, a helpful, concise, and knowledgeable AI assistant.Conversation so far:${formattedHistory}User: ${content}AI:`.trim();
+      `You are Raven, a helpful, concise, and knowledgeable AI assistant. Format your response clearly using code blocks and helpful comments.Conversation so far:${formattedHistory}, User: ${content}AI:`.trim();
 
     try {
       // Await the streamed response to complete and capture the full answer
