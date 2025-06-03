@@ -1,12 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import styled from "@emotion/styled";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, BrainCircuit, Bot } from "lucide-react";
 
 const Wrapper = styled.div`
   position: relative;
-  margin-right: 0.75rem;
 `;
 
 const SelectorButton = styled.button`
@@ -19,24 +18,19 @@ const SelectorButton = styled.button`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: box-shadow 0.3s ease;
-
-  &:hover {
-    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.04);
-  }
 `;
 
-const Dropdown = styled(motion.div)`
+const Dropdown = styled(motion.div)<{ dropUp: boolean }>`
   position: absolute;
-  top: 130%;
+  ${({ dropUp }) => (dropUp ? "bottom: 110%;" : "top: 110%;")}
   left: 0;
+  width: 220px;
   background: white;
   border-radius: 12px;
   border: 1px solid #ddd;
   padding: 0.5rem;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-  width: 220px;
-  z-index: 999;
+  z-index: 50;
 `;
 
 const Option = styled.div<{ selected: boolean }>`
@@ -48,25 +42,9 @@ const Option = styled.div<{ selected: boolean }>`
   cursor: pointer;
   background: ${({ selected }) => (selected ? "#f3f4f6" : "white")};
   font-weight: ${({ selected }) => (selected ? 600 : 400)};
-  color: #333;
 
   &:hover {
     background: #f9fafb;
-  }
-
-  .label {
-    display: flex;
-    flex-direction: column;
-    margin-left: 0.6rem;
-  }
-
-  .title {
-    font-size: 0.95rem;
-  }
-
-  .desc {
-    font-size: 0.75rem;
-    color: #666;
   }
 `;
 
@@ -75,13 +53,13 @@ const models = [
     id: "deep-seek",
     name: "Deep Seek coder",
     desc: "Great for most coding tasks",
-    icon: <BrainCircuit size={20} />,
+    icon: <BrainCircuit size={18} />,
   },
   {
     id: "open-chat",
     name: "o3",
     desc: "Uses advanced reasoning",
-    icon: <Bot size={20} />,
+    icon: <Bot size={18} />,
   },
 ];
 
@@ -92,15 +70,35 @@ export const ModelSelector = ({
 }) => {
   const [selected, setSelected] = useState(models[0]);
   const [open, setOpen] = useState(false);
+  const [dropUp, setDropUp] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  // Decide drop direction whenever the dropdown opens / on resize
+  useEffect(() => {
+    if (!open) return;
+
+    const decideDirection = () => {
+      if (!wrapperRef.current) return;
+      const rect = wrapperRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      // Need ~250px space: dropdown (220px) + margin
+      setDropUp(spaceBelow < 250 && spaceAbove > spaceBelow);
+    };
+
+    decideDirection();
+    window.addEventListener("resize", decideDirection);
+    return () => window.removeEventListener("resize", decideDirection);
+  }, [open]);
 
   const handleSelect = (model: (typeof models)[0]) => {
     setSelected(model);
-    setOpen(false);
     onModelChange(model.id);
+    setOpen(false);
   };
 
   return (
-    <Wrapper>
+    <Wrapper ref={wrapperRef}>
       <SelectorButton onClick={() => setOpen((o) => !o)}>
         {selected.icon}
       </SelectorButton>
@@ -108,25 +106,28 @@ export const ModelSelector = ({
       <AnimatePresence>
         {open && (
           <Dropdown
-            initial={{ opacity: 0, y: -8 }}
+            dropUp={dropUp}
+            initial={{ opacity: 0, y: dropUp ? 8 : -8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2 }}
+            exit={{ opacity: 0, y: dropUp ? 8 : -8 }}
+            transition={{ duration: 0.18 }}
           >
-            {models.map((model) => (
+            {models.map((m) => (
               <Option
-                key={model.id}
-                selected={model.id === selected.id}
-                onClick={() => handleSelect(model)}
+                key={m.id}
+                selected={m.id === selected.id}
+                onClick={() => handleSelect(m)}
               >
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  {model.icon}
-                  <div className="label">
-                    <span className="title">{model.name}</span>
-                    <span className="desc">{model.desc}</span>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  {m.icon}
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    <span>{m.name}</span>
+                    <span style={{ fontSize: "0.75rem", color: "#666" }}>
+                      {m.desc}
+                    </span>
                   </div>
                 </div>
-                {model.id === selected.id && <Check size={16} />}
+                {m.id === selected.id && <Check size={14} />}
               </Option>
             ))}
           </Dropdown>
