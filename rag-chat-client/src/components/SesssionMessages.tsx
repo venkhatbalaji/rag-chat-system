@@ -145,6 +145,7 @@ const ChatSessionPage = () => {
   const modelType = searchParams.get("model");
   const theme = useTheme();
   const [message, setMessage] = useState("");
+  const [hasSentInitial, setHasSentInitial] = useState(false);
   const [selectedModel, setSelectedModel] = useState(modelType || "deep-seek");
   const { user, isLoading } = useUser();
   const { refetchSessions } = useSession();
@@ -168,7 +169,12 @@ const ChatSessionPage = () => {
     responseText,
   } = useSessionStream();
   useEffect(() => {
-    if (!sessionIdLoading && session && session?.triggered === false) {
+    if (
+      !sessionIdLoading &&
+      session &&
+      session?.triggered === false &&
+      !hasSentInitial
+    ) {
       setLocalMessages([
         {
           sender: SenderType.USER,
@@ -180,6 +186,7 @@ const ChatSessionPage = () => {
       sendMessage(session.title, selectedModel, id as string);
       refetchSessions();
       refetch();
+      setHasSentInitial(true);
     }
   }, [
     session,
