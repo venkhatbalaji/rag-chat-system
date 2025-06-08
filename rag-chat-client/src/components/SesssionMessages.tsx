@@ -145,15 +145,14 @@ const ChatSessionPage = () => {
   const modelType = searchParams.get("model");
   const theme = useTheme();
   const [message, setMessage] = useState("");
-  const [hasSentInitial, setHasSentInitial] = useState(false);
   const [selectedModel, setSelectedModel] = useState(modelType || "deep-seek");
-  const { user, isLoading } = useUser();
-  const { refetchSessions } = useSession();
   const [localMessages, setLocalMessages] = useState<MessageType[]>([]);
   const [streamingMessage, setStreamingMessage] = useState<MessageType | null>(
     null
   );
-
+  const [hasSentInitial, setHasSentInitial] = useState(false);
+  const { user, isLoading } = useUser();
+  const { refetchSessions } = useSession();
   const { data: session, isLoading: sessionIdLoading } = useSessionById(
     id as string,
     !!user && !isLoading
@@ -168,11 +167,18 @@ const ChatSessionPage = () => {
     sendMessage,
     responseText,
   } = useSessionStream();
+  // 🔁 Reset all local state when ID changes
+  useEffect(() => {
+    setHasSentInitial(false);
+    setLocalMessages([]);
+    setStreamingMessage(null);
+  }, [id]);
+  // 🧠 Send initial message based on session
   useEffect(() => {
     if (
       !sessionIdLoading &&
       session &&
-      session?.triggered === false &&
+      session.triggered === false &&
       !hasSentInitial
     ) {
       setLocalMessages([
@@ -196,7 +202,9 @@ const ChatSessionPage = () => {
     refetchSessions,
     selectedModel,
     sendMessage,
+    hasSentInitial,
   ]);
+  // 🟣 Streaming response handling
   useEffect(() => {
     if (!responseText) return;
     setStreamingMessage({
@@ -205,18 +213,13 @@ const ChatSessionPage = () => {
       _id: "streaming-agent-msg",
       createdAt: new Date().toISOString(),
     });
-  }, [responseText, setStreamingMessage]);
+  }, [responseText]);
   useEffect(() => {
     if (!isMessageLoading && streamingMessage) {
       setLocalMessages((prev) => [...prev, streamingMessage]);
       setStreamingMessage(null);
     }
-  }, [
-    isMessageLoading,
-    streamingMessage,
-    setLocalMessages,
-    setStreamingMessage,
-  ]);
+  }, [isMessageLoading, streamingMessage]);
   const handleSend = () => {
     if (!message.trim()) return;
     setLocalMessages((prev) => [
