@@ -1,4 +1,4 @@
-export default {
+const url = {
   google: {
     login: "/api/v1/auth/google",
   },
@@ -19,3 +19,4 @@ export default {
     create: (id: string) => `/api/v1/sessions/${id}/message`,
   },
 };
+export default url;

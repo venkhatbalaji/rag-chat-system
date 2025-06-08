@@ -181,7 +181,15 @@ const ChatSessionPage = () => {
       refetchSessions();
       refetch();
     }
-  }, [session, id, sessionIdLoading]);
+  }, [
+    session,
+    id,
+    sessionIdLoading,
+    refetch,
+    refetchSessions,
+    selectedModel,
+    sendMessage,
+  ]);
   useEffect(() => {
     if (!responseText) return;
     setStreamingMessage({
@@ -190,13 +198,18 @@ const ChatSessionPage = () => {
       _id: "streaming-agent-msg",
       createdAt: new Date().toISOString(),
     });
-  }, [responseText]);
+  }, [responseText, setStreamingMessage]);
   useEffect(() => {
     if (!isMessageLoading && streamingMessage) {
       setLocalMessages((prev) => [...prev, streamingMessage]);
       setStreamingMessage(null);
     }
-  }, [isMessageLoading]);
+  }, [
+    isMessageLoading,
+    streamingMessage,
+    setLocalMessages,
+    setStreamingMessage,
+  ]);
   const handleSend = () => {
     if (!message.trim()) return;
     setLocalMessages((prev) => [
@@ -228,7 +241,7 @@ const ChatSessionPage = () => {
               ].map((msg, i) => (
                 <MessageBubble key={msg._id || i} sender={msg.sender}>
                   {Array.isArray(msg.content) ? (
-                    msg.content.map((c: any, j: number) => (
+                    msg.content.map((j: number) => (
                       <Paragraph
                         key={j}
                         dangerouslySetInnerHTML={{

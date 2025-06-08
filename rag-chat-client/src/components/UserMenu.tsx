@@ -168,7 +168,10 @@ export const UserMenu = () => {
     <Container ref={ref}>
       {isLoading ? null : user ? (
         <AvatarButton onClick={() => setOpen(!open)}>
-          <img src={user.avatarUrl || "/default-avatar.png"} alt={user.name} />
+          <Image
+            src={user.avatarUrl || "/default-avatar.png"}
+            alt={user.name}
+          />
         </AvatarButton>
       ) : (
         <ToggleButton onClick={() => setOpen(!open)}>

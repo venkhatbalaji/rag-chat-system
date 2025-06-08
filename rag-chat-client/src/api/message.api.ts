@@ -7,6 +7,7 @@ export class Message {
       const response = await axiosInstance.get(urls.chat.list(sessionId));
       return response.data?.data || [];
     } catch (e) {
+      console.log(e);
       return [];
     }
   }

@@ -22,7 +22,13 @@ function AppShell({ children }: { children: React.ReactNode }) {
   const { data: currentTheme } = useTheme();
   const isDark = currentTheme === "dark";
   const { expanded } = useSidebar();
-
+  const cssVars: Record<string, string> = {
+    "--bg": isDark ? darkTheme.background : lightTheme.background,
+    "--text": isDark ? darkTheme.text : lightTheme.text,
+    "--code-bg": isDark ? "#2d2d2d" : "#f3f4f6",
+    "--pre-bg": isDark ? "#1e1e1e" : "#f3f4f6",
+    "--pre-text": isDark ? "#dcdcdc" : "#111111",
+  };
   return (
     <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
       <GlobalStyles />
@@ -41,13 +47,7 @@ function AppShell({ children }: { children: React.ReactNode }) {
             marginLeft: expanded ? "280px" : "80px",
             transition: "margin-left 0.3s ease-in-out",
             position: "relative",
-            ["--bg" as any]: isDark
-              ? darkTheme.background
-              : lightTheme.background,
-            ["--text" as any]: isDark ? darkTheme.text : lightTheme.text,
-            ["--code-bg" as any]: isDark ? "#2d2d2d" : "#f3f4f6",
-            ["--pre-bg" as any]: isDark ? "#1e1e1e" : "#f3f4f6",
-            ["--pre-text" as any]: isDark ? "#dcdcdc" : "#111111",
+            ...cssVars
           }}
         >
           <div

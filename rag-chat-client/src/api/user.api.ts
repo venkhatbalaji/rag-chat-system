@@ -7,6 +7,7 @@ export class User {
       const response = await axiosInstance.get(urls.user.me);
       return response.data?.user;
     } catch (e) {
+      console.log(e);
       return null;
     }
   }
@@ -16,6 +17,7 @@ export class User {
       const response = await axiosInstance.get(urls.google.login);
       return response.data;
     } catch (e) {
+      console.log(e);
       return null;
     }
   }
@@ -25,6 +27,7 @@ export class User {
       const response = await axiosInstance.post(urls.user.logout);
       return response.data;
     } catch (e) {
+      console.log(e);
       return null;
     }
   }
