@@ -25,7 +25,7 @@ export class User {
   static async logout() {
     try {
       const response = await axiosInstance.post(urls.user.logout);
-      return response.data;
+      return response.data?.data?.redirectTo;
     } catch (e) {
       console.log(e);
       return null;

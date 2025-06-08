@@ -13,6 +13,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Response, Request } from 'express';
 import { GoogleUserDto } from './dto/google.user.dto';
 import { ConfigService } from '@nestjs/config';
+import { createSuccessResponse } from 'src/common/utils/response.util';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -67,8 +68,8 @@ export class AuthController {
   async logout(@Req() req: Request, @Res() res: Response) {
     const { sub: userId, provider } = req.user as GoogleUserDto;
     await this.authService.logout(userId, provider);
-    return res.redirect(
-      `https://appengine.google.com/_ah/logout?continue=${this.config.get<string>('redirectUrl')}`,
-    );
+    return createSuccessResponse({
+      redirectTo: `https://appengine.google.com/_ah/logout?continue=${this.config.get<string>('redirectUrl')}`,
+    });
   }
 }
