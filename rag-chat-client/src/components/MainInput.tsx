@@ -107,6 +107,7 @@ export const MainInput = () => {
       const sessionId = await createSession({ title: message.trim() });
       if (typeof sessionId === "string" && sessionId.trim()) {
         router.replace(`/chat/${sessionId}?model=${selectedModel}`);
+        router.refresh();
       }
       setMessage("");
     } catch (err) {
