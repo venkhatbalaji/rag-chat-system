@@ -99,18 +99,19 @@ export const MainInput = () => {
   const [message, setMessage] = useState("");
   const [selectedModel, setSelectedModel] = useState("deep-seek");
 
-  const { mutate: createSession, isPending } = useCreateSession({
-    onSuccess: (sessionId?: string | null) => {
+  const { mutateAsync: createSession, isPending } = useCreateSession();
+
+  const handleSend = async () => {
+    if (!message.trim()) return;
+    try {
+      const sessionId = await createSession({ title: message.trim() });
       if (typeof sessionId === "string" && sessionId.trim()) {
         router.replace(`/chat/${sessionId}?model=${selectedModel}`);
       }
-    },
-  });
-
-  const handleSend = () => {
-    if (!message.trim()) return;
-    createSession({ title: message.trim() });
-    setMessage("");
+      setMessage("");
+    } catch (err) {
+      console.error("Session creation failed", err);
+    }
   };
 
   return (
