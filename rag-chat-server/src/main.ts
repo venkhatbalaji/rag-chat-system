@@ -44,6 +44,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       `${appName}.io`,
+      'raven.ravex.io',
       'http://localhost:3000',
       'https://dev-raven.ravex.io:3002',
     ],
