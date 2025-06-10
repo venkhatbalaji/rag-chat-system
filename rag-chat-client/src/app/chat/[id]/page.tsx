@@ -3,6 +3,11 @@ import ChatSessionPage from "@/components/SesssionMessages";
 import { SessionType } from "@/hooks/useSession";
 import { redirect } from "next/navigation";
 
+interface PageProps {
+  params?: Promise<any>;
+  searchParams?: Promise<any>;
+}
+
 async function getData(id: string) {
   try {
     if (id) {
@@ -16,8 +21,9 @@ async function getData(id: string) {
   }
 }
 
-export default async function Chat({ params }: { params: { id: string } }) {
-  const data = await getData(params.id);
+export default async function Chat({ params }: PageProps) {
+  const props = await params;
+  const data = await getData(props.id);
   if (data) {
     return <ChatSessionPage sessionData={data} />;
   }
