@@ -4,11 +4,13 @@ import { SessionType } from "@/hooks/useSession";
 import { redirect } from "next/navigation";
 
 interface PageProps {
-  params?: Promise<any>;
-  searchParams?: Promise<any>;
+  params?: Promise<{
+    id: string;
+  }>;
+  searchParams?: Promise<Record<string, string | string[]>>;
 }
 
-async function getData(id: string) {
+async function getData(id: string | undefined | null) {
   try {
     if (id) {
       const sessionData = await SessionServerSide.sessionById(id);
@@ -23,7 +25,7 @@ async function getData(id: string) {
 
 export default async function Chat({ params }: PageProps) {
   const props = await params;
-  const data = await getData(props.id);
+  const data = await getData(props ? props.id : null);
   if (data) {
     return <ChatSessionPage sessionData={data} />;
   }
