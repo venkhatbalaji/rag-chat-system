@@ -37,6 +37,7 @@ const ChatContainer = styled.div`
   flex-direction: column;
   width: 100%;
   max-width: 800px;
+  padding-bottom: 150px;
 `;
 
 // Bubble style per sender type
@@ -66,8 +67,13 @@ const ChatWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  max-width: 700px;
+  max-width: 800px;
   width: 100%;
+  position: fixed;
+  bottom: 0;
+  padding-bottom: 1rem;
+  text-align: center;
+  background: ${({ theme }) => theme.secondaryBackground};
 `;
 
 const InputRow = styled.div`
@@ -136,6 +142,11 @@ const MainColumn = styled.div`
   max-width: 800px;
   flex: 1;
   gap: 1.5rem;
+`;
+
+const CautionSpan = styled.span`
+  font-size: 12px;
+  color: ${({ theme }) => theme.text};
 `;
 
 const ChatSessionPage = ({ sessionData }: { sessionData: SessionType }) => {
@@ -274,6 +285,9 @@ const ChatSessionPage = ({ sessionData }: { sessionData: SessionType }) => {
                   )}
                 </SendButton>
               </InputRow>
+              <CautionSpan>
+                Raven can make mistakes. Check important info.
+              </CautionSpan>
             </ChatWrapper>
           </>
         )}

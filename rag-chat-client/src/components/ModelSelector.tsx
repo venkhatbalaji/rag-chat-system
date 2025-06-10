@@ -69,7 +69,7 @@ export const ModelSelector = ({
 }: {
   onModelChange: (id: string) => void;
 }) => {
-  const [selected, setSelected] = useState(models[0]);
+  const [selected, setSelected] = useState(models[1]);
   const [open, setOpen] = useState(false);
   const [dropUp, setDropUp] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);

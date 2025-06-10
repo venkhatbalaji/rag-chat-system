@@ -172,6 +172,8 @@ export const UserMenu = () => {
           <Image
             src={user.avatarUrl || "/default-avatar.png"}
             alt={user.name}
+            width={80}
+            height={80}
           />
         </AvatarButton>
       ) : (
