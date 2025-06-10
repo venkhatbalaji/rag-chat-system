@@ -10,7 +10,7 @@ import { Loader2, SendHorizonal } from "lucide-react";
 import { useTheme } from "@emotion/react";
 import { useSessionById } from "@/hooks/useSessionById";
 import { useSessionStream } from "@/hooks/useSessionStream";
-import { useSession } from "@/hooks/useSession";
+import { SessionType, useSession } from "@/hooks/useSession";
 import { TypingDots } from "./loader/TypingDots";
 import { ModelSelector } from "./ModelSelector";
 import { renderMarkdown } from "@/utils/renderMarkdown";
@@ -139,13 +139,13 @@ const MainColumn = styled.div`
   gap: 1.5rem;
 `;
 
-const ChatSessionPage = () => {
+const ChatSessionPage = ({ sessionData }: { sessionData: SessionType }) => {
   const { id } = useParams();
   const searchParams = useSearchParams();
   const modelType = searchParams.get("model");
   const theme = useTheme();
   const [message, setMessage] = useState("");
-  const [selectedModel, setSelectedModel] = useState(modelType || "deep-seek");
+  const [selectedModel, setSelectedModel] = useState(modelType || "open-chat");
   const [localMessages, setLocalMessages] = useState<MessageType[]>([]);
   const [streamingMessage, setStreamingMessage] = useState<MessageType | null>(
     null
@@ -153,10 +153,6 @@ const ChatSessionPage = () => {
   const [hasSentInitial, setHasSentInitial] = useState(false);
   const { user, isLoading } = useUser();
   const { refetchSessions } = useSession();
-  const { data: session, isLoading: sessionIdLoading } = useSessionById(
-    id as string,
-    !!user && !isLoading
-  );
   const {
     data: sessionMessages = [],
     isLoading: messageLoading,
@@ -167,37 +163,24 @@ const ChatSessionPage = () => {
     sendMessage,
     responseText,
   } = useSessionStream();
-  // 🔁 Reset all local state when ID changes
   useEffect(() => {
-    setHasSentInitial(false);
-    setLocalMessages([]);
-    setStreamingMessage(null);
-  }, [id]);
-  // 🧠 Send initial message based on session
-  useEffect(() => {
-    if (
-      !sessionIdLoading &&
-      session &&
-      session.triggered === false &&
-      !hasSentInitial
-    ) {
+    if (sessionData && sessionData.triggered === false) {
       setLocalMessages([
         {
           sender: SenderType.USER,
-          content: session.title,
+          content: sessionData.title,
           _id: crypto.randomUUID(),
           createdAt: new Date().toISOString(),
         },
       ]);
-      sendMessage(session.title, selectedModel, id as string);
+      sendMessage(sessionData.title, selectedModel, id as string);
       refetchSessions();
       refetch();
       setHasSentInitial(true);
     }
   }, [
-    session,
+    sessionData,
     id,
-    sessionIdLoading,
     refetch,
     refetchSessions,
     selectedModel,

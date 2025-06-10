@@ -1,4 +1,9 @@
-import { axiosInstance, baseUrl } from "./config";
+import { SessionType } from "@/hooks/useSession";
+import {
+  axiosInstance,
+  baseUrl,
+  getAxiosInstanceForServerSide,
+} from "./config";
 import urls from "./urls";
 
 export class Session {
@@ -100,6 +105,21 @@ export class Session {
     try {
       const response = await axiosInstance.put(urls.session.update(id), data);
       return response.data?.session;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+}
+
+export class SessionServerSide {
+  static async sessionById(sessionId: string) {
+    try {
+      const axiosServrSideInstance = await getAxiosInstanceForServerSide();
+      const response = await axiosServrSideInstance.get(
+        urls.session.byId(sessionId)
+      );
+      return response.data?.data as SessionType;
     } catch (e) {
       console.log(e);
       return null;

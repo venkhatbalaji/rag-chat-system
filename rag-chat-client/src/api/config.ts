@@ -11,4 +11,24 @@ const axiosInstance: AxiosInstance = axios.create({
   withCredentials: true,
 });
 
-export { baseUrl, axiosInstance };
+async function getAxiosInstanceForServerSide() {
+  const { cookies } = await import("next/headers");
+  const cookieStore = await cookies();
+  const cookieHeader = cookieStore
+    .getAll()
+    .map(({ name, value }) => `${name}=${value}`)
+    .join("; ");
+  const headers = {
+    "Content-type": "application/json",
+    Accept: "application/json",
+    Cookie: cookieHeader,
+  };
+  const axiosInstance = axios.create({
+    baseURL: process.env.BASE_URL,
+    headers,
+    withCredentials: true,
+  });
+  return axiosInstance;
+}
+
+export { baseUrl, axiosInstance, getAxiosInstanceForServerSide };
