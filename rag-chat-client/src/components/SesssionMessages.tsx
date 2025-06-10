@@ -8,7 +8,6 @@ import BirdCubeLoader from "./loader/BirdCubeLoader";
 import { useEffect, useState } from "react";
 import { Loader2, SendHorizonal } from "lucide-react";
 import { useTheme } from "@emotion/react";
-import { useSessionById } from "@/hooks/useSessionById";
 import { useSessionStream } from "@/hooks/useSessionStream";
 import { SessionType, useSession } from "@/hooks/useSession";
 import { TypingDots } from "./loader/TypingDots";
