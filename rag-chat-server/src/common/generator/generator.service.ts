@@ -6,14 +6,14 @@ import { StreamedChunk } from './type';
 import { ModelType } from '../../chat/schemas/message.schema';
 
 @Injectable()
-export class DeepseekService {
+export class GeneratorService {
   private readonly baseUrl: string;
 
   constructor(
     private readonly config: ConfigService,
     private readonly http: HttpServiceWrapper,
   ) {
-    this.baseUrl = this.config.get<string>('generator.deepSeekUrl');
+    this.baseUrl = this.config.get<string>('generator.url');
   }
 
   async generate(

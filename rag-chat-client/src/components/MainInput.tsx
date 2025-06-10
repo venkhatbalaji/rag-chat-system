@@ -7,6 +7,7 @@ import { useUser } from "@/context/UserContext";
 import { useCreateSession } from "@/hooks/useCreateSession";
 import { useRouter } from "next/navigation";
 import { ModelSelector } from "./ModelSelector";
+import { revalidatePath } from "next/cache";
 
 const Container = styled.div`
   display: flex;
@@ -97,7 +98,7 @@ export const MainInput = () => {
   const router = useRouter();
   const theme = useTheme();
   const [message, setMessage] = useState("");
-  const [selectedModel, setSelectedModel] = useState("deep-seek");
+  const [selectedModel, setSelectedModel] = useState("open-chat");
 
   const { mutateAsync: createSession, isPending } = useCreateSession();
 
@@ -106,6 +107,7 @@ export const MainInput = () => {
     try {
       const sessionId = await createSession({ title: message.trim() });
       if (typeof sessionId === "string" && sessionId.trim()) {
+        await revalidatePath(`/chat/${sessionId}?model=${selectedModel}`);
         router.replace(`/chat/${sessionId}?model=${selectedModel}`);
         router.refresh();
       }

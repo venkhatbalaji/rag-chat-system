@@ -11,7 +11,7 @@ import { Session, SessionDocument } from '../session/schemas/session.schema';
 import { Model, Types } from 'mongoose';
 import { QueryMessagesDto } from './dto/query-messages.dto';
 import { Response } from 'express';
-import { DeepseekService } from '../common/generator/generator.service';
+import { GeneratorService } from '../common/generator/generator.service';
 
 @Injectable()
 export class ChatService {
@@ -20,13 +20,13 @@ export class ChatService {
     private readonly messageModel: Model<MessageDocument>,
     @InjectModel(Session.name)
     private readonly sessionModel: Model<SessionDocument>,
-    private readonly deepSeekService: DeepseekService,
+    private readonly deepSeekService: GeneratorService,
   ) {}
 
   async processMessage(
     sessionId: string,
     sender: SenderType,
-    modelType: ModelType = ModelType.DEEPSEEK,
+    modelType: ModelType = ModelType.OPENCHAT,
     content: string,
     response: Response,
   ) {

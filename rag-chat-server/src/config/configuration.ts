@@ -6,8 +6,7 @@ export default () => ({
   port: parseInt(process.env.PORT || '3000', 10),
   apiKey: process.env.API_KEY,
   generator: {
-    deepSeekUrl: process.env.DEEP_SEEK_URL || 'http://localhost:11434',
-    openChatUrl: process.env.OPENCHAT_URL || 'http://localhost:11435'
+    url: process.env.GENERATOR_URL || 'http://localhost:11434',
   },
   jwt: {
     secret: process.env.API_KEY,

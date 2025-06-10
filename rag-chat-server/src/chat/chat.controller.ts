@@ -14,12 +14,10 @@ import {
   ApiTags,
   ApiOperation,
   ApiParam,
-  ApiBody,
   ApiQuery,
   ApiResponse,
   ApiSecurity,
 } from '@nestjs/swagger';
-import { AddMessageDto } from './dto/add-message.dto';
 import { QueryMessagesDto } from './dto/query-messages.dto';
 import { MessageResponseDto } from './dto/message-response.dto';
 import { Message } from './schemas/message.schema';
@@ -27,7 +25,6 @@ import {
   ApiResponse as Response,
   createSuccessResponse,
 } from '../common/utils/response.util';
-import { StreamedMessageResponseDto } from './dto/streamed-message.dto';
 import { RateLimitGuard } from '../common/guards/rate-limit.guard';
 
 @ApiTags('Chat')

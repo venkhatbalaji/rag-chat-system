@@ -10,7 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import { HttpServiceWrapper } from '../common/http/http.service';
 import { HttpModule } from '@nestjs/axios';
 import { CloudflareService } from '../common/cloudflare/cloudflare.service';
-import { DeepseekService } from '../common/generator/generator.service';
+import { GeneratorService } from '../common/generator/generator.service';
 
 @Module({
   imports: [
@@ -31,7 +31,7 @@ import { DeepseekService } from '../common/generator/generator.service';
     CloudflareService,
     SessionService,
     ChatService,
-    DeepseekService,
+    GeneratorService,
   ],
   exports: [SessionService],
 })
