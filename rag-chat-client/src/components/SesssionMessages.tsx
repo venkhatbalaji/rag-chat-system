@@ -163,7 +163,12 @@ const ChatSessionPage = ({ sessionData }: { sessionData: SessionType }) => {
     responseText,
   } = useSessionStream();
   useEffect(() => {
-    if (sessionData && sessionData.triggered === false) {
+    if (
+      sessionData &&
+      sessionData.triggered === false &&
+      !hasSentInitial &&
+      !isMessageLoading
+    ) {
       setLocalMessages([
         {
           sender: SenderType.USER,
