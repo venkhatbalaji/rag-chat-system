@@ -3,11 +3,11 @@ import ChatSessionPage from "@/components/SesssionMessages";
 import { SessionType } from "@/hooks/useSession";
 import { redirect } from "next/navigation";
 
-interface ChatProps {
+type PageProps = {
   params: {
     id: string;
   };
-}
+};
 
 async function getData(id: string) {
   try {
@@ -22,7 +22,7 @@ async function getData(id: string) {
   }
 }
 
-export default async function Chat({ params }: ChatProps) {
+export default async function Chat({ params }: PageProps) {
   const data = await getData(params.id);
   if (data) {
     return <ChatSessionPage sessionData={data} />;
